@@ -6,15 +6,23 @@ date: "September 14, 2015"
 output:
   html_document:
     keep_md: yes
+  pdf_document: default
 ---
 
 #Introduction
-This file presents the analyses performed in R to obtain the figures presented in Vea et al. Differential juvenile hormone modulation establishes extreme sexual dimorphism in scale insects.
+This file details the analyses performed in R to obtain the figures presented in Vea et al. Differential juvenile hormone modulations establish extreme sexual dimorphism in scale insects.
+
+
+#Data
+This script uses 2 files obtained from qRT-PCR (see Materials and Methods of main text for equipment). All values are the SDM.
+- expressionprofile.csv: data for expression profiles
+- Pyri5mM.csv: data for effect of JHM treatments on male development
 
 ```{r,echo=FALSE}
 library(ggplot2)
 library(plyr)
 library(tidyr)
+
 
 ##script source for summarizeSE: http://www.cookbook-r.com/Graphs/Plotting_means_and_error_bars_(ggplot2)/#Helper functions
 ## Gives count, mean, standard deviation, standard error of the mean, and confidence interval (default 95%).
@@ -61,21 +69,20 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
 
 ```
 
-
-
 #Loading datasets
 ```{r}
-#for details of variable in each file, cf. readme.md
-dataA<-read.csv(file="expressionprofile.csv",header = TRUE)
+setwd("/Users/ivea/Dropbox/_Github_reps/mealybugJH/")
+dataA<-read.csv(file="expressionprofile.csv",header =TRUE)
 dataB<-read.csv(file="Pyri5mM.csv",header = TRUE)
 
 #reshaping data
-dataA2<-gather(dataA,Gene,SDM,6:19)
-#summarizing by gene, day afther hatching and sex
+dataA2<-gather(dataA,Gene,SDM,7:24)
+
+#summarizing by gene, day after hatching and sex
 dataA3<-ddply(dataA2,~Day.after.hatching +Sex+Gene,summarise,meanrp49=mean(SDM.rp49.2),meanSDM=mean(SDM))
 
 #normalize dataB with housekeeping gene
-dataB$gene.normal<-dataB$SDM.gene/dataB$rp49.1
+dataB$gene.normal<-dataB$SDM.gene/dataB$rp49.2
 
 #making mean and error values
 dataBs<-summarySE(dataB, measurevar="gene.normal", groupvars=c("Treatment","Stage.treated","Gene"))
@@ -85,6 +92,7 @@ dataBs<-summarySE(dataB, measurevar="gene.normal", groupvars=c("Treatment","Stag
 #Expression profiles
 ##Figure 2: Expression profiles of PkJHAMT, PkMet, PkTai, PkKr-h1-common
 ```{r}
+library(dplyr)
 Figure2<-subset(dataA3,Gene=="SDM.JHAMT"|Gene=="SDM.Met"|Gene=="SDM.Tai"|Gene=="SDM.Pkkr.h1_26")
 
 pFig1<-ggplot(Figure2, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
@@ -99,125 +107,198 @@ pFig1+facet_grid(Gene~.,scales="free")
 ```
 
 ##Figure 3: Effect on Met and Kr-h1
-###Figure 3B: PkMet
+###Figure 3C: PkMet
 ```{r}
-PkMet<-subset(dataBs,dataBs$Gene=="B.Met")
+#boxplot
 
-ggplot(PkMet, aes(x=Stage.treated, y=gene.normal, fill=Treatment)) + 
-    geom_bar(position=position_dodge(), stat="identity",
-             colour="black", # Use black outlines,
-             size=1) +      # Thinner lines
-    geom_errorbar(aes(ymin=gene.normal-se, ymax=gene.normal+se),
-                  size=.8,    # Thinner lines
-                  width=.2,
-                  position=position_dodge(.9)) +
-    xlab("") +
-    ylab("PkMet relative expression/rp49") +
-    scale_fill_manual(name="", # Legend label, use darker colors
-                   breaks=c("A.Methanol", "B.5mM"),
-                   labels=c("methanol","5mM pyriproxyfen"),
-                   values=c("white", "#888888"))+
-    ggtitle("Effect of pyriproxyfen on PkMet") + 
-    scale_y_continuous(breaks=seq(0,2,by = 0.1)) +
-    theme_bw(15)
+PkMetbox<-subset(dataB, Gene=="B.Met")
+PkMetbox<-select(PkMetbox, gene.normal,Stage.treated, Treatment)
+Metbox<-ggplot(data = PkMetbox, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) +
+  ylab("PkMet relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey"))+
+  scale_y_continuous(breaks=seq(0,2,by = 0.1)) + theme_bw(25)
+
+Metbox
+postscript("Figure3C-PkMetboxplot.ps")
+Metbox
+dev.off()
+
+```
+###Statistical test Met
+```{r}
+prepupatestMet<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="B.Met")
+t.test(gene.normal~Treatment,data=prepupatestMet)
+pupatestMet<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="B.Met")
+t.test(gene.normal~Treatment,data=pupatestMet)
+```
+
+##Figure 3-D to F: Tai core, Tai-IN and Tai-DEL
+```{r}
+PkTaibox<-subset(dataB, Gene=="O.Tai")
+PkTaibox
+PkTaibox<-select(PkTaibox, gene.normal,Stage.treated, Treatment)
+Taibox<-ggplot(data = PkTaibox, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("PkTai relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.2)) + theme_bw(25)
+Taibox
+postscript("Figure3-PkTaiboxplot.ps")
+Taibox
+dev.off()
+```
+
+```{r}
+PkTaiINbox<-subset(dataB, Gene=="P.Tai.IN")
+PkTaiINbox
+PkTaiINbox<-select(PkTaiINbox, gene.normal,Stage.treated, Treatment)
+TaiINbox<-ggplot(data = PkTaiINbox, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("PkTai IN-1 expression (/rpL32)") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.2)) + theme_bw(25)
+TaiINbox
+postscript("Figure3-PkTaiINboxplot.ps")
+TaiINbox
+dev.off()
 ```
 
 
-###Figure 3C: PkKr-h1
+```{r}
+#boxplot
+PkTaiDELbox<-subset(dataB, Gene=="Q.Tai-DEL")
+PkTaiDELbox
+PkTaiDELbox<-select(PkTaiDELbox, gene.normal,Stage.treated, Treatment)
+TaiDELbox<-ggplot(data = PkTaiDELbox, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size =1) + 
+  ylab("PkTai DEL-1 expression (/rpL32)") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.01)) + theme_bw(25)
+TaiDELbox
+postscript("Figure3-PkTaiDELbox.ps")
+TaiDELbox
+dev.off()
+
+```
+
+
+
+###Statistical tests
+
+```{r}
+
+prepupatestPkTaiIN<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="P.Tai.IN")
+t.test(gene.normal~Treatment,data=prepupatestPkTaiIN)
+pupatestPkTaiIN<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="P.Tai.IN")
+t.test(gene.normal~Treatment,data=pupatestPkTaiIN)
+
+
+prepupatestPkTaiDEL<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="Q.Tai-DEL")
+t.test(gene.normal~Treatment,data=prepupatestPkTaiDEL)
+pupatestPkTaiDEL<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="Q.Tai-DEL")
+t.test(gene.normal~Treatment,data=pupatestPkTaiDEL)
+
+prepupatestPkTai<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="O.Tai")
+t.test(gene.normal~Treatment,data=prepupatestPkTai)
+pupatestPkTai<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="O.Tai")
+t.test(gene.normal~Treatment,data=pupatestPkTai)
+
+```
+
+
+##Figure 3G to I: PkKr-h1 core, PkKr-h1 A and PkKr-h1 B
 ```{r}
 PkKrh1<-subset(dataBs,dataBs$Gene=="D.kr-h1")
+PkKrh1box<-subset(dataB, Gene=="D.kr-h1")
+PkKrh1box
+PkKrh1box<-select(PkKrh1box, gene.normal,Stage.treated, Treatment)
+Krh1box<-ggplot(data = PkKrh1box, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("PkKr-h1 relative amount (/rpL32)") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey"))+
+  scale_y_continuous(breaks=seq(0,2,by = 0.05)) + theme_bw(25)
 
-ggplot(PkKrh1, aes(x=Stage.treated, y=gene.normal, fill=Treatment)) + 
-    geom_bar(position=position_dodge(), stat="identity",
-             colour="black", # Use black outlines,
-             size=1) +      # Thinner lines
-    geom_errorbar(aes(ymin=gene.normal-se, ymax=gene.normal+se),
-                  size=.8,    # Thinner lines
-                  width=.2,
-                  position=position_dodge(.9)) +
-    xlab("") +
-    ylab("PkKr-h1 relative expression/rp49") +
-    scale_fill_manual(name="Treatment", # Legend label, use darker colors
-                   breaks=c("A.Methanol", "B.5mM"),
-                   labels=c("methanol","5mM pyriproxyfen"),
-                   values=c("white", "#888888"))+
-    ggtitle("Effect of pyriproxyfen on PkKr-h1") + 
-    scale_y_continuous(breaks=seq(0,2,by = 0.1)) +
-    theme_bw(15)
+Krh1box
+postscript("Figure3-PkKrh1boxplot.ps")
+Krh1box
+dev.off()
 ```
 
-###Figure 3D: PkKr-h1 A
-```{r}
-PkKrh1A<-subset(dataBs,(dataBs$Gene=="E.Pkkr-h1A"))
 
-ggplot(PkKrh1A, aes(x=Stage.treated, y=gene.normal, fill=Treatment)) + 
-    geom_bar(position=position_dodge(), stat="identity",
-             colour="black", # Use black outlines,
-             size=1) +      # Thinner lines
-    geom_errorbar(aes(ymin=gene.normal-se, ymax=gene.normal+se),
-                  size=.8,    # Thinner lines
-                  width=.2,
-                  position=position_dodge(.9)) +
-    xlab("") +
-    ylab("PkKr-h1 A relative expression/rp49") +
-    scale_fill_manual(name="Treatment", # Legend label, use darker colors
-                   breaks=c("A.Methanol", "B.5mM"),
-                   labels=c("methanol","5mM pyriproxyfen"),
-                   values=c("white", "#888888"))+
-    ggtitle("Effect of pyriproxyfen on PkKr-h1 A") + 
-    scale_y_continuous(breaks=seq(0,2,by = 0.02)) +
-    theme_bw(15)
+```{r}
+#boxplot
+PkKrh1Abox<-subset(dataB, Gene=="E.Pkkr-h1A")
+PkKrh1Abox
+PkKrh1Abox<-select(PkKrh1Abox, gene.normal,Stage.treated, Treatment)
+Krh1Abox<-ggplot(data = PkKrh1Abox, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("PkKr-h1 A relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.02)) + theme_bw(25)
+
+Krh1Abox
+postscript("Figure3-PkKrh1Aboxplot.ps")
+Krh1Abox
+dev.off()
 ```
 
-###Figure 3E: PkKr-h1 B
+
 ```{r}
-PkKrh1B<-subset(dataBs,(dataBs$Gene=="F.Pkkr-h1B"))
+#boxplot
+PkKrh1Bbox<-subset(dataB, Gene=="F.Pkkr-h1B")
+PkKrh1Bbox
+PkKrh1Bbox<-select(PkKrh1Bbox, gene.normal,Stage.treated, Treatment)
+Krh1Bbox<-ggplot(data = PkKrh1Bbox, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8,size=1) + 
+  ylab("PkKr-h1 B relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.0005)) + theme_bw(25)
 
-ggplot(PkKrh1B, aes(x=Stage.treated, y=gene.normal, fill=Treatment)) + 
-    geom_bar(position=position_dodge(), stat="identity",
-             colour="black", # Use black outlines,
-             size=1) +      # Thinner lines
-    geom_errorbar(aes(ymin=gene.normal-se, ymax=gene.normal+se),
-                  size=.8,    # Thinner lines
-                  width=.2,
-                  position=position_dodge(.9)) +
-    xlab("") +
-    ylab("PkKr-h1 B relative expression/rp49") +
-    scale_fill_manual(name="Treatment", # Legend label, use darker colors
-                   breaks=c("A.Methanol", "B.5mM"),
-                   labels=c("methanol","5mM pyriproxyfen"),
-                   values=c("white", "#888888"))+
-    ggtitle("Effect of pyriproxyfen on PkKr-h1 B") + 
-    scale_y_continuous(breaks=seq(0,2,by = 0.0005)) +
-    theme_bw(15)
-
+Krh1Bbox
+postscript("Figure3H-PkKrh1Bboxplot.ps")
+Krh1Bbox
+dev.off()
 ```
 
 ###Statistical tests
 ```{r}
 #subsetting original data for statistical tests prepupae
-prepupatestMet<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="B.Met")
-t.test(gene.normal~Treatment,data=prepupatestMet)
 
 prepupatestPkkrh1<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="D.kr-h1")
 t.test(gene.normal~Treatment,data=prepupatestPkkrh1)
-
-prepupatestPkkrh1A<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="E.Pkkr-h1A")
-t.test(gene.normal~Treatment,data=prepupatestPkkrh1A)
-
-prepupatestPkkrh1B<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="F.Pkkr-h1B")
-t.test(gene.normal~Treatment,data=prepupatestPkkrh1B)
-
-#subsetting original data for statistical tests pupae
-pupatestMet<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="B.Met")
-t.test(gene.normal~Treatment,data=pupatestMet)
-
 pupatestPkkrh1<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="D.kr-h1")
 t.test(gene.normal~Treatment,data=pupatestPkkrh1)
 
+prepupatestPkkrh1A<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="E.Pkkr-h1A")
+t.test(gene.normal~Treatment,data=prepupatestPkkrh1A)
 pupatestPkkrh1A<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="E.Pkkr-h1A")
 t.test(gene.normal~Treatment,data=pupatestPkkrh1A)
 
+
+prepupatestPkkrh1B<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="F.Pkkr-h1B")
+t.test(gene.normal~Treatment,data=prepupatestPkkrh1B)
 pupatestPkkrh1B<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="F.Pkkr-h1B")
 t.test(gene.normal~Treatment,data=pupatestPkkrh1B)
 ```
@@ -225,7 +306,7 @@ t.test(gene.normal~Treatment,data=pupatestPkkrh1B)
 ##Figure 5: Broad
 ###Figure 5A: Expression profile of Pkbr1 and Pkbr2
 ```{r}
-Figure5<-subset(dataA3,Gene=="SDM.Pkbr1"|Gene=="SDM.Pkbr3")
+Figure5<-subset(dataA3,Gene=="SDM.Pkbr1"|Gene=="SDM.Pkbr2"|Gene=="SDM.Pkbr3")
 pFig5<-ggplot(Figure5, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
    geom_point(aes(linetype=Sex))+
    geom_line(aes(linetype=Sex))+
@@ -238,174 +319,265 @@ pFig5+facet_grid(Gene~.,scale="free")
 
 ```
 
+###Figure S7A: Expression profile of Pkbr1Z2, Z4, Pkbr2, Z2 and Z4 and Pkbr3Z2
+```{r}
+FigureS7A<-subset(dataA3,Gene=="SDM.Pkbr1.Z2"|Gene=="SDM.Pkbr1.Z4"|Gene=="SDM.Pkbr2.Z2"|Gene=="SDM.Pkbr2.Z4"|Gene=="SDM.Pkbr3.Z2")
+pFigS7A<-ggplot(FigureS7A, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+   geom_point(aes(linetype=Sex))+
+   geom_line(aes(linetype=Sex))+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  ylab("Pkbr copies and isoforms relative expression (/rpL32)") +xlab("days after oviposition") +
+  theme_bw(15) + 
+  theme(axis.title.x = element_text(colour = "#242424"))
+
+pFigS7A+facet_grid(Gene~.,scale="free")
+```
+
 ###Figure5B
 ```{r}
-Pkbr1<-subset(dataBs,dataBs$Gene=="G.Pkbr1")
+#boxplot
+Pkbr1box<-subset(dataB, Gene=="G.Pkbr1")
+Pkbr1box
+Pkbr1box<-select(Pkbr1box, gene.normal,Stage.treated, Treatment)
+br1box<-ggplot(data = Pkbr1box, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("Pkbr1 relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.05)) + theme_bw(25)
 
-ggplot(Pkbr1, aes(x=Stage.treated, y=gene.normal, fill=Treatment)) + 
-    geom_bar(position=position_dodge(), stat="identity",
-             colour="black", # Use black outlines,
-             size=1) +      # Thinner lines
-    geom_errorbar(aes(ymin=gene.normal-se, ymax=gene.normal+se),
-                  size=.8,    # Thinner lines
-                  width=.2,
-                  position=position_dodge(.9)) +
-    xlab("") +
-    ylab("Pkbr1 relative expression/rp49") +
-    scale_fill_manual(name="Treatment", # Legend label, use darker colors
-                   breaks=c("A.Methanol", "B.5mM"),
-                   labels=c("methanol","5mM pyriproxyfen"),
-                   values=c("white", "#888888"))+
-    ggtitle("Effect of pyriproxyfen on Pkbr1") + 
-    scale_y_continuous(breaks=seq(0,2,by = 0.02)) +
-    theme_bw(15)
+br1box
+postscript("Figure5B-Pkbr1Bboxplot.ps")
+br1box
+dev.off()
+
 ```
 
 ###Figure5C
 ```{r}
-Pkbr1Z2<-subset(dataBs,dataBs$Gene=="H.Pkbr1.Z2")
+#boxplot
+Pkbr1Z2box<-subset(dataB, Gene=="H.Pkbr1.Z2")
+Pkbr1Z2box
+Pkbr1Z2box<-select(Pkbr1Z2box, gene.normal,Stage.treated, Treatment)
+br1Z2box<-ggplot(data = Pkbr1Z2box, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("Pkbr1 Z2 relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.01)) + theme_bw(25)
 
-ggplot(Pkbr1Z2, aes(x=Stage.treated, y=gene.normal, fill=Treatment)) + 
-    geom_bar(position=position_dodge(), stat="identity",
-             colour="black", # Use black outlines,
-             size=1) +      # Thinner lines
-    geom_errorbar(aes(ymin=gene.normal-se, ymax=gene.normal+se),
-                  size=.8,    # Thinner lines
-                  width=.2,
-                  position=position_dodge(.9)) +
-    xlab("") +
-    ylab("Pkbr1 Z2 relative expression/rp49") +
-    scale_fill_manual(name="Treatment", # Legend label, use darker colors
-                   breaks=c("A.Methanol", "B.5mM"),
-                   labels=c("methanol","5mM pyriproxyfen"),
-                   values=c("white", "#888888"))+
-    ggtitle("Effect of pyriproxyfen on Pkbr1 Z2") + 
-    scale_y_continuous(breaks=seq(0,2,by = 0.01)) +
-    theme_bw(15)
+br1Z2box
+postscript("Figure5C-Pkbr1Z2boxplot.ps")
+br1Z2box
+dev.off()
 ```
 
 ###Figure5D
 ```{r}
-Pkbr1Z4<-subset(dataBs,dataBs$Gene=="I.Pkbr1.Z4")
-
-ggplot(Pkbr1Z4, aes(x=Stage.treated, y=gene.normal, fill=Treatment)) + 
-    geom_bar(position=position_dodge(), stat="identity",
-             colour="black", # Use black outlines,
-             size=1) +      # Thinner lines
-    geom_errorbar(aes(ymin=gene.normal-se, ymax=gene.normal+se),
-                  size=.8,    # Thinner lines
-                  width=.2,
-                  position=position_dodge(.9)) +
-    xlab("") +
-    ylab("Pkbr1 Z4 relative expression/rp49") +
-    scale_fill_manual(name="Treatment", # Legend label, use darker colors
-                   breaks=c("A.Methanol", "B.5mM"),
-                   labels=c("methanol","5mM pyriproxyfen"),
-                   values=c("white", "#888888"))+
-    ggtitle("Effect of pyriproxyfen on Pkbr1 Z4") + 
-    scale_y_continuous(breaks=seq(0,2,by = 0.01)) +
-    theme_bw(15)
+#boxplot
+Pkbr1Z4box<-subset(dataB, Gene=="I.Pkbr1.Z4")
+Pkbr1Z4box
+Pkbr1Z4box<-select(Pkbr1Z4box, gene.normal,Stage.treated, Treatment)
+br1Z4box<-ggplot(data = Pkbr1Z4box, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("Pkbr1 Z2 relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.01)) + theme_bw(25)
+br1Z4box
+postscript("Figure5D-Pkbr1Z4boxplot.ps")
+br1Z4box
+dev.off()
 ```
 
 
 ###Figure5E
 ```{r}
-Pkbr3<-subset(dataBs,dataBs$Gene=="M.Pkbr3")
-
-ggplot(Pkbr3, aes(x=Stage.treated, y=gene.normal, fill=Treatment)) + 
-    geom_bar(position=position_dodge(), stat="identity",
-             colour="black", # Use black outlines,
-             size=1) +      # Thinner lines
-    geom_errorbar(aes(ymin=gene.normal-se, ymax=gene.normal+se),
-                  size=.8,    # Thinner lines
-                  width=.2,
-                  position=position_dodge(.9)) +
-    xlab("") +
-    ylab("Pkbr3 relative expression/rp49") +
-    scale_fill_manual(name="Treatment", # Legend label, use darker colors
-                   breaks=c("A.Methanol", "B.5mM"),
-                   labels=c("methanol","5mM pyriproxyfen"),
-                   values=c("white", "#888888"))+
-    ggtitle("Effect of pyriproxyfen on Pkbr3") + 
-    scale_y_continuous(breaks=seq(0,2,by = 0.1)) +
-    theme_bw(15)
+#boxplot
+Pkbr3box<-subset(dataB, Gene=="M.Pkbr3")
+Pkbr3box
+Pkbr3box<-select(Pkbr3box, gene.normal,Stage.treated, Treatment)
+br3box<-ggplot(data = Pkbr3box, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("Pkbr1 Z2 relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.05)) + theme_bw(25)
+br3box
+postscript("Figure5E-Pkbr3boxplot.ps")
+br3box
+dev.off()
 ```
+
 ##Figure5F
 ```{r}
-Pkbr3Z2<-subset(dataBs,dataBs$Gene=="N.Pkbr3.Z2")
+#boxplot
+Pkbr3Z2box<-subset(dataB, Gene=="N.Pkbr3.Z2")
+Pkbr3Z2box
+Pkbr3Z2box<-select(Pkbr3Z2box, gene.normal,Stage.treated, Treatment)
+br3Z2box<-ggplot(data = Pkbr3Z2box, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("Pkbr1 Z2 relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.05)) + theme_bw(25)
+br3Z2box
+postscript("Figure5F-Pkbr3Z2boxplot.ps")
+br3Z2box
+dev.off()
 
-ggplot(Pkbr3Z2, aes(x=Stage.treated, y=gene.normal, fill=Treatment)) + 
-    geom_bar(position=position_dodge(), stat="identity",
-             colour="black", # Use black outlines,
-             size=1) +      # Thinner lines
-    geom_errorbar(aes(ymin=gene.normal-se, ymax=gene.normal+se),
-                  size=.8,    # Thinner lines
-                  width=.2,
-                  position=position_dodge(.9)) +
-    xlab("") +
-    ylab("Pkbr3 Z2 relative expression/rp49") +
-    scale_fill_manual(name="Treatment", # Legend label, use darker colors
-                   breaks=c("A.Methanol", "B.5mM"),
-                   labels=c("methanol","5mM pyriproxyfen"),
-                   values=c("white", "#888888"))+
-    ggtitle("Effect of pyriproxyfen on Pkbr3 Z2") + 
-    scale_y_continuous(breaks=seq(0,2,by = 0.1)) +
-    theme_bw(15)
 ```
+
+###Figure  Pkbr2 and Pkbr2 Z2, Z4
+```{r}
+#boxplot
+Pkbr2box<-subset(dataB, Gene=="J.Pkbr2")
+Pkbr2box
+Pkbr2box<-select(Pkbr2box, gene.normal,Stage.treated, Treatment)
+br2box<-ggplot(data = Pkbr2box, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("Pkbr2 relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.005)) + theme_bw(25)
+br2box
+postscript("FigureS-Pkbr2boxplot.ps")
+br2box
+dev.off()
+
+```
+
+```{r}
+#boxplot
+Pkbr2Z2box<-subset(dataB, Gene=="K.Pkbr2.Z2")
+Pkbr2Z2box
+Pkbr2Z2box<-select(Pkbr2Z2box, gene.normal,Stage.treated, Treatment)
+br2Z2box<-ggplot(data = Pkbr2Z2box, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("Pkbr2 Z2 relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.005)) + theme_bw(25)
+br2Z2box
+postscript("FigureS-Pkbr2Z2boxplot.ps")
+br2Z2box
+dev.off()
+```
+
+
+```{r}
+#boxplot
+Pkbr2Z4box<-subset(dataB, Gene=="L.Pkbr2.Z4")
+Pkbr2Z4box
+Pkbr2Z4box<-select(Pkbr2Z4box, gene.normal,Stage.treated, Treatment)
+br2Z4box<-ggplot(data = Pkbr2Z4box, aes(x = Stage.treated, y = gene.normal)) + 
+  geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
+  ylab("Pkbr2 Z2 relative amount/rpL32") +
+  scale_fill_manual(name="", # Legend label, use darker colors
+                  breaks=c("A.Methanol", "B.5mM"),
+                  labels=c("methanol","5mM pyriproxyfen"),
+                  values=c("white", "grey")) +
+  scale_y_continuous(breaks=seq(0,2,by = 0.005)) + theme_bw(25)
+br2Z4box
+postscript("FigureS-Pkbr2Z4boxplot.ps")
+br2Z4box
+dev.off()
+```
+
+
+
 
 ###Statistical tests
 ```{r}
 #subsetting original data for statistical tests prepupae
+
+
 prepupatestPkbr1<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="G.Pkbr1")
 t.test(gene.normal~Treatment,data=prepupatestPkbr1)
-
-prepupatestPkbr1z2<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="H.Pkbr1.Z2")
-t.test(gene.normal~Treatment,data=prepupatestPkbr1z2)
-
-prepupatestPkbr1z4<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="I.Pkbr1.Z4")
-t.test(gene.normal~Treatment,data=prepupatestPkbr1z4)
-
-prepupatestPkbr2<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="J.Pkbr2")
-t.test(gene.normal~Treatment,data=prepupatestPkbr2)
-
-prepupatestPkbr2z2<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="K.Pkbr2.Z2")
-t.test(gene.normal~Treatment,data=prepupatestPkbr2z2)
-
-prepupatestPkbr2z4<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="L.Pkbr2.Z4")
-t.test(gene.normal~Treatment,data=prepupatestPkbr2z4)
-
-prepupatestPkbr3<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="M.Pkbr3")
-t.test(gene.normal~Treatment,data=prepupatestPkbr3)
-
-prepupatestPkbr3z2<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="N.Pkbr3.Z2")
-t.test(gene.normal~Treatment,data=prepupatestPkbr3z2)
-```
-
-```{r}
-#subsetting original data for statistical tests pupae
 pupatestPkbr1<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="G.Pkbr1")
 t.test(gene.normal~Treatment,data=pupatestPkbr1)
 
+
+prepupatestPkbr1z2<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="H.Pkbr1.Z2")
+t.test(gene.normal~Treatment,data=prepupatestPkbr1z2)
 pupatestPkbr1z2<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="H.Pkbr1.Z2")
 t.test(gene.normal~Treatment,data=pupatestPkbr1z2)
 
+
+prepupatestPkbr1z4<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="I.Pkbr1.Z4")
+t.test(gene.normal~Treatment,data=prepupatestPkbr1z4)
 pupatestPkbr1z4<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="I.Pkbr1.Z4")
 t.test(gene.normal~Treatment,data=pupatestPkbr1z4)
 
+
+prepupatestPkbr2<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="J.Pkbr2")
+t.test(gene.normal~Treatment,data=prepupatestPkbr2)
 pupatestPkbr2<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="J.Pkbr2")
 t.test(gene.normal~Treatment,data=pupatestPkbr2)
 
+
+prepupatestPkbr2z2<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="K.Pkbr2.Z2")
+t.test(gene.normal~Treatment,data=prepupatestPkbr2z2)
 pupatestPkbr2z2<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="K.Pkbr2.Z2")
 t.test(gene.normal~Treatment,data=pupatestPkbr2z2)
 
+prepupatestPkbr2z4<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="L.Pkbr2.Z4")
+t.test(gene.normal~Treatment,data=prepupatestPkbr2z4)
 pupatestPkbr2z4<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="L.Pkbr2.Z4")
 t.test(gene.normal~Treatment,data=pupatestPkbr2z4)
 
+prepupatestPkbr3<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="M.Pkbr3")
+t.test(gene.normal~Treatment,data=prepupatestPkbr3)
 pupatestPkbr3<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="M.Pkbr3")
 t.test(gene.normal~Treatment,data=pupatestPkbr3)
 
+
+prepupatestPkbr3z2<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="N.Pkbr3.Z2")
+t.test(gene.normal~Treatment,data=prepupatestPkbr3z2)
 pupatestPkbr3z2<-subset(dataB,dataB$Stage.treated=="PuD0" & dataB$Gene=="N.Pkbr3.Z2")
 t.test(gene.normal~Treatment,data=pupatestPkbr3z2)
+
 ```
 
+#Supplementary material
 
+##Figure Taiman 5A and B and INDEL
+```{r}
+FigureSTai<-subset(dataA3,Gene=="SDM.Tai.IN"|Gene=="SDM.Tai.DEL")
+
+pFigSTai<-ggplot(FigureSTai, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+  geom_point(aes(linetype=Sex),size=2)+
+  geom_line(aes(linetype=Sex),size=0.5)+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  ylab("Gene relative expression (/rpL32)") +xlab("days after oviposition") +
+  theme_bw(15) + 
+  theme(axis.title.x = element_text(colour = "#242424"))
+
+pFigSTai+facet_grid(Gene~.,scales="free")
+
+FigureSTai5<-subset(dataA3,Gene=="SDM.Tai5A"|Gene=="SDM.Tai5B")
+
+pFigSTai5<-ggplot(FigureSTai5, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+  geom_point(aes(linetype=Sex),size=2)+
+  geom_line(aes(linetype=Sex),size=0.5)+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  ylab("Gene relative expression (/rpL32)") +xlab("days after oviposition") +
+  theme_bw(15) + 
+  theme(axis.title.x = element_text(colour = "#242424"))
+
+pFigSTai5+facet_grid(Gene~.,scales="free")
+```
