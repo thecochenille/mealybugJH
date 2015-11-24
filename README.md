@@ -5,8 +5,8 @@
 This folder includes all files for the R analyses performed in the manuscript: Vea et la. Differential juvenile hormone modulation establishes extreme sexual dimorphism in scale insects (for submission in PloS ONE)
 
 ## List of files
-- JHmealybug.Rmd: R script that can be used directly in Rstudio
-- JHmealybug.md: this will can display out graphics when directly viewed in Github.
+- [JHmealybug.Rmd](https://github.com/zourloubidou/mealybugJH/blob/master/JHmealybug.Rmd): R script that can be used directly in Rstudio
+- [JHmealybug.md](https://github.com/zourloubidou/mealybugJH/blob/master/JHmealybug.md): this will display graphics when directly viewed in Github.
  
 - expressionprofile.csv: data file including SDM quantity of each studied genes obtained from quantitative RT-PCR for samples of male and female mealybugs collected every 24 hour (cf. Materials and Methods, and supplementary pdf for details of experiments). List of variables as follows: 
 
@@ -41,6 +41,8 @@ This folder includes all files for the R analyses performed in the manuscript: V
 - SDM.gene	
 - rp49.1	
 - gene.normal
+
+
 
 
 
