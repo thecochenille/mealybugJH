@@ -1,11 +1,10 @@
----
-title: "Sexratio"
-output: html_document
----
+# Sexratio
+Isabelle Vea  
+September 14, 2015  
 
 #Functions
-```{r}
 
+```r
 ##script source for summarizeSE: http://www.cookbook-r.com/Graphs/Plotting_means_and_error_bars_(ggplot2)/#Helper functions
 ## Gives count, mean, standard deviation, standard error of the mean, and confidence interval (default 95%).
 ##   data: a data frame.
@@ -54,14 +53,34 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
 
 The dataset was obtained from embryo counts. Describe protocol
 Variables in this dataset:
-```{r}
+
+```r
 library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.1.3
+```
+
+```r
 library(plyr)
+```
+
+```
+## Warning: package 'plyr' was built under R version 3.1.3
+```
+
+```r
 library(tidyr)
 
 
 data<-read.csv("sexratio.csv")
 names(data)
+```
+
+```
+## [1] "Mother"        "Oviposition"   "NumberEggs"    "NumberMale"   
+## [5] "NumberFemale"  "NumberUnknown"
 ```
 
 - Mother: 
@@ -72,9 +91,8 @@ names(data)
 - NumberUnknown
 
 #Percentage of males
-```{r}
 
-
+```r
 #generatin percentage of males
 
 data$PercentMale<-data$NumberMale*100/data$NumberEggs
@@ -86,7 +104,13 @@ data$PercentMale<-data$NumberMale*100/data$NumberEggs
 
 
 dataovi<-summarySE(data, measurevar=c("PercentMale"), groupvars=c("Oviposition"))
+```
 
+```
+## Warning in qt(conf.interval/2 + 0.5, datac$N - 1): NaNs produced
+```
+
+```r
 ggplot(dataovi, aes(x=Oviposition, y=PercentMale)) + 
     geom_line(position=position_dodge(), stat="identity",
              colour="black", # Use black outlines,
@@ -100,8 +124,30 @@ ggplot(dataovi, aes(x=Oviposition, y=PercentMale)) +
     ylab("% of male embryos") +
     scale_y_continuous(breaks=seq(0,100,by = 20)) +
     theme_bw(25)
+```
 
+![](sexratio_files/figure-html/unnamed-chunk-3-1.png) 
 
+```r
 summary(dataovi)
+```
+
+```
+##   Oviposition       N          PercentMale          sd        
+##  Min.   : 1   Min.   :1.000   Min.   :23.74   Min.   : 3.030  
+##  1st Qu.: 5   1st Qu.:2.000   1st Qu.:33.86   1st Qu.: 7.983  
+##  Median : 9   Median :5.000   Median :42.75   Median :12.614  
+##  Mean   : 9   Mean   :3.824   Mean   :47.13   Mean   :12.511  
+##  3rd Qu.:13   3rd Qu.:5.000   3rd Qu.:51.43   3rd Qu.:17.814  
+##  Max.   :17   Max.   :5.000   Max.   :97.31   Max.   :22.451  
+##                                               NA's   :1       
+##        se               ci         
+##  Min.   : 2.143   Min.   :  6.511  
+##  1st Qu.: 3.917   1st Qu.: 13.253  
+##  Median : 5.928   Median : 22.858  
+##  Mean   : 6.464   Mean   : 40.854  
+##  3rd Qu.: 8.784   3rd Qu.: 33.614  
+##  Max.   :12.626   Max.   :160.432  
+##  NA's   :1        NA's   :1
 ```
 
