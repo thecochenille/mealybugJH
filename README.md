@@ -5,10 +5,8 @@
 This folder includes all files for the R analyses performed in the manuscript: Vea et la. Differential juvenile hormone modulation establishes extreme sexual dimorphism in scale insects (for submission in PloS ONE)
 
 ## List of files
-- [JHmealybug.Rmd](https://github.com/zourloubidou/mealybugJH/blob/master/JHmealybug.Rmd): R script that can be used directly in Rstudio
-- [JHmealybug.md](https://github.com/zourloubidou/mealybugJH/blob/master/JHmealybug.md): this will display graphics when directly viewed in Github.
-- [sexratio.csv](https://github.com/zourloubidou/mealybugJH/blob/master/sexratio.csv): embryo counts for 5 females
- 
+
+- [sexratio.csv](https://github.com/zourloubidou/mealybugJH/blob/master/sexratio.csv): embryo counts for 5 females.
 - [expressionprofile.csv](https://github.com/zourloubidou/mealybugJH/blob/master/expressionprofile.csv): data file including SDM quantity of each studied genes obtained from quantitative RT-PCR for samples of male and female mealybugs collected every 24 hour (cf. Materials and Methods, and supplementary pdf for details of experiments). List of variables as follows: 
 
 - [Pyri5mM.csv](https://github.com/zourloubidou/mealybugJH/blob/master/Pyri5mM.csv): data file including SDM quantity of each studied gene for prepupae and pupae treated with 5mM pyriproxyfen
@@ -57,8 +55,8 @@ Below are the SDM values obtained from qRT-PCR
 - NumberUnknown: number of embryos that could not be sexed
 
 ##Scripts
-To access sex ratio analysis click [here]()
-To access expression profiles and effect of JHM treatment click [here]()
+To access sex ratio analysis click [here](https://github.com/zourloubidou/mealybugJH/blob/master/JHmealybug.md)
+To access expression profiles and effect of JHM treatment click [here](https://github.com/zourloubidou/mealybugJH/blob/master/sexratio.md)
 
 
 
