@@ -49,7 +49,7 @@ Below are the SDM values obtained from qRT-PCR
 ###sexratio.csv
 - Mother: letter assigned to each mother
 - Oviposition: day of oviposition after first oviposition (day 1)
-- NumberEggs: numer of eggs oviposited
+- NumberEggs: number of eggs oviposited
 - NumberMale: number of male embryos
 - NumberFemale: number of female embryos
 - NumberUnknown: number of embryos that could not be sexed
