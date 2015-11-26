@@ -23,15 +23,14 @@ This script uses 2 files obtained from qRT-PCR (see Materials and Methods of mai
 #Loading datasets
 
 ```r
-setwd("/Users/ivea/Dropbox/_Github_reps/mealybugJH/")
 dataA<-read.csv(file="expressionprofile.csv",header =TRUE)
 dataB<-read.csv(file="Pyri5mM.csv",header = TRUE)
 
 #reshaping data
 dataA2<-gather(dataA,Gene,SDM,7:24)
 
-#summarizing by gene, day after hatching and sex
-dataA3<-ddply(dataA2,~Day.after.hatching +Sex+Gene,summarise,meanrp49=mean(SDM.rp49.2),meanSDM=mean(SDM))
+#summarizing by gene, day after oviposition and sex
+dataA3<-ddply(dataA2,~Day.after.oviposition +Sex+Gene,summarise,meanrp49=mean(SDM.rp49.2),meanSDM=mean(SDM))
 
 #normalize dataB with housekeeping gene
 dataB$gene.normal<-dataB$SDM.gene/dataB$rp49.2
@@ -68,7 +67,7 @@ library(dplyr)
 ```r
 Figure2<-subset(dataA3,Gene=="SDM.JHAMT"|Gene=="SDM.Met"|Gene=="SDM.Tai"|Gene=="SDM.Pkkr.h1_26")
 
-pFig1<-ggplot(Figure2, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFig1<-ggplot(Figure2, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
   geom_point(aes(linetype=Sex),size=2)+
   geom_line(aes(linetype=Sex),size=0.5)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
@@ -161,54 +160,30 @@ PkTaibox
 ```
 
 ```
-##     Sample  Treatment Stage.treated  Gene SDM.gene   rp49.1   rp49.2
-## 323 PyrT21 A.Methanol         PreD1 O.Tai 0.000438 0.001770 0.002420
-## 324 PyrT11 A.Methanol         PreD1 O.Tai 0.000491 0.004210 0.004680
-## 325 PyrT19 A.Methanol         PreD1 O.Tai 0.000648 0.002010 0.002680
-## 326 PyrT20 A.Methanol         PreD1 O.Tai 0.000817 0.005270 0.004500
-## 327 PyrT30 A.Methanol         PreD1 O.Tai 0.000700 0.003630 0.003430
-## 328 PyrT37 A.Methanol         PreD1 O.Tai 0.000830 0.005320 0.005150
-## 329 PyrT27 A.Methanol          PuD0 O.Tai 0.001010 0.000354 0.000534
-## 330 PyrT34 A.Methanol          PuD0 O.Tai 0.000324 0.001180 0.001380
-## 331 PyrT35 A.Methanol          PuD0 O.Tai 0.001050 0.001390 0.000939
-## 332 PyrT36 A.Methanol          PuD0 O.Tai 0.001040 0.000917 0.001220
-## 333 PyrT44 A.Methanol          PuD0 O.Tai 0.000244 0.000394 0.000717
-## 334 PyrT54      B.5mM         PreD1 O.Tai 0.000324 0.000786 0.001430
-## 335 PyrT55      B.5mM         PreD1 O.Tai 0.000629 0.002350 0.003510
-## 336 PyrT56      B.5mM         PreD1 O.Tai 0.000431 0.001280 0.002580
-## 337 PyrT57      B.5mM         PreD1 O.Tai 0.000805 0.001690 0.003140
-## 338 PyrT61      B.5mM         PreD1 O.Tai 0.000408 0.002080 0.002640
-## 339 PyrT62      B.5mM         PreD1 O.Tai 0.001080 0.005070 0.003120
-## 340 PyrT52      B.5mM          PuD0 O.Tai 0.000491 0.007550 0.001940
-## 341 PyrT58      B.5mM          PuD0 O.Tai 0.000487 0.000361 0.002640
-## 342 PyrT59      B.5mM          PuD0 O.Tai 0.000361 0.001370 0.002130
-## 343 PyrT60      B.5mM          PuD0 O.Tai 0.000293 0.001480 0.002030
-## 344 PyrT63      B.5mM          PuD0 O.Tai 0.000518 0.001020 0.001820
-## 345 PyrT64      B.5mM          PuD0 O.Tai 0.000204 0.000464 0.000970
-##     gene.normal
-## 323   0.1809917
-## 324   0.1049145
-## 325   0.2417910
-## 326   0.1815556
-## 327   0.2040816
-## 328   0.1611650
-## 329   1.8913858
-## 330   0.2347826
-## 331   1.1182109
-## 332   0.8524590
-## 333   0.3403068
-## 334   0.2265734
-## 335   0.1792023
-## 336   0.1670543
-## 337   0.2563694
-## 338   0.1545455
-## 339   0.3461538
-## 340   0.2530928
-## 341   0.1844697
-## 342   0.1694836
-## 343   0.1443350
-## 344   0.2846154
-## 345   0.2103093
+##     Sample  Treatment Stage.treated  Gene SDM.gene   rp49.2 gene.normal
+## 323 PyrT21 A.Methanol         PreD1 O.Tai 0.000438 0.002420   0.1809917
+## 324 PyrT11 A.Methanol         PreD1 O.Tai 0.000491 0.004680   0.1049145
+## 325 PyrT19 A.Methanol         PreD1 O.Tai 0.000648 0.002680   0.2417910
+## 326 PyrT20 A.Methanol         PreD1 O.Tai 0.000817 0.004500   0.1815556
+## 327 PyrT30 A.Methanol         PreD1 O.Tai 0.000700 0.003430   0.2040816
+## 328 PyrT37 A.Methanol         PreD1 O.Tai 0.000830 0.005150   0.1611650
+## 329 PyrT27 A.Methanol          PuD0 O.Tai 0.001010 0.000534   1.8913858
+## 330 PyrT34 A.Methanol          PuD0 O.Tai 0.000324 0.001380   0.2347826
+## 331 PyrT35 A.Methanol          PuD0 O.Tai 0.001050 0.000939   1.1182109
+## 332 PyrT36 A.Methanol          PuD0 O.Tai 0.001040 0.001220   0.8524590
+## 333 PyrT44 A.Methanol          PuD0 O.Tai 0.000244 0.000717   0.3403068
+## 334 PyrT54      B.5mM         PreD1 O.Tai 0.000324 0.001430   0.2265734
+## 335 PyrT55      B.5mM         PreD1 O.Tai 0.000629 0.003510   0.1792023
+## 336 PyrT56      B.5mM         PreD1 O.Tai 0.000431 0.002580   0.1670543
+## 337 PyrT57      B.5mM         PreD1 O.Tai 0.000805 0.003140   0.2563694
+## 338 PyrT61      B.5mM         PreD1 O.Tai 0.000408 0.002640   0.1545455
+## 339 PyrT62      B.5mM         PreD1 O.Tai 0.001080 0.003120   0.3461538
+## 340 PyrT52      B.5mM          PuD0 O.Tai 0.000491 0.001940   0.2530928
+## 341 PyrT58      B.5mM          PuD0 O.Tai 0.000487 0.002640   0.1844697
+## 342 PyrT59      B.5mM          PuD0 O.Tai 0.000361 0.002130   0.1694836
+## 343 PyrT60      B.5mM          PuD0 O.Tai 0.000293 0.002030   0.1443350
+## 344 PyrT63      B.5mM          PuD0 O.Tai 0.000518 0.001820   0.2846154
+## 345 PyrT64      B.5mM          PuD0 O.Tai 0.000204 0.000970   0.2103093
 ```
 
 ```r
@@ -244,54 +219,30 @@ PkTaiINbox
 ```
 
 ```
-##     Sample  Treatment Stage.treated     Gene SDM.gene   rp49.1   rp49.2
-## 277 PyrT21 A.Methanol         PreD1 P.Tai.IN 0.000302 0.001770 0.002420
-## 278 PyrT11 A.Methanol         PreD1 P.Tai.IN 0.000335 0.004210 0.004680
-## 279 PyrT19 A.Methanol         PreD1 P.Tai.IN 0.000328 0.002010 0.002680
-## 280 PyrT20 A.Methanol         PreD1 P.Tai.IN 0.000450 0.005270 0.004500
-## 281 PyrT30 A.Methanol         PreD1 P.Tai.IN 0.000471 0.003630 0.003430
-## 282 PyrT37 A.Methanol         PreD1 P.Tai.IN 0.000591 0.005320 0.005150
-## 283 PyrT27 A.Methanol          PuD0 P.Tai.IN 0.000736 0.000354 0.000534
-## 284 PyrT34 A.Methanol          PuD0 P.Tai.IN 0.000720 0.001180 0.001380
-## 285 PyrT35 A.Methanol          PuD0 P.Tai.IN 0.001160 0.001390 0.000939
-## 286 PyrT36 A.Methanol          PuD0 P.Tai.IN 0.001000 0.000917 0.001220
-## 287 PyrT44 A.Methanol          PuD0 P.Tai.IN 0.000213 0.000394 0.000717
-## 288 PyrT54      B.5mM         PreD1 P.Tai.IN 0.000201 0.000786 0.001430
-## 289 PyrT55      B.5mM         PreD1 P.Tai.IN 0.000440 0.002350 0.003510
-## 290 PyrT56      B.5mM         PreD1 P.Tai.IN 0.000325 0.001280 0.002580
-## 291 PyrT57      B.5mM         PreD1 P.Tai.IN 0.000794 0.001690 0.003140
-## 292 PyrT61      B.5mM         PreD1 P.Tai.IN 0.000528 0.002080 0.002640
-## 293 PyrT62      B.5mM         PreD1 P.Tai.IN 0.000657 0.005070 0.003120
-## 294 PyrT52      B.5mM          PuD0 P.Tai.IN 0.000356 0.007550 0.001940
-## 295 PyrT58      B.5mM          PuD0 P.Tai.IN 0.000440 0.000361 0.002640
-## 296 PyrT59      B.5mM          PuD0 P.Tai.IN 0.000293 0.001370 0.002130
-## 297 PyrT60      B.5mM          PuD0 P.Tai.IN 0.000182 0.001480 0.002030
-## 298 PyrT63      B.5mM          PuD0 P.Tai.IN 0.000569 0.001020 0.001820
-## 299 PyrT64      B.5mM          PuD0 P.Tai.IN 0.000220 0.000464 0.000970
-##     gene.normal
-## 277  0.12479339
-## 278  0.07158120
-## 279  0.12238806
-## 280  0.10000000
-## 281  0.13731778
-## 282  0.11475728
-## 283  1.37827715
-## 284  0.52173913
-## 285  1.23535676
-## 286  0.81967213
-## 287  0.29707113
-## 288  0.14055944
-## 289  0.12535613
-## 290  0.12596899
-## 291  0.25286624
-## 292  0.20000000
-## 293  0.21057692
-## 294  0.18350515
-## 295  0.16666667
-## 296  0.13755869
-## 297  0.08965517
-## 298  0.31263736
-## 299  0.22680412
+##     Sample  Treatment Stage.treated     Gene SDM.gene   rp49.2 gene.normal
+## 277 PyrT21 A.Methanol         PreD1 P.Tai.IN 0.000302 0.002420  0.12479339
+## 278 PyrT11 A.Methanol         PreD1 P.Tai.IN 0.000335 0.004680  0.07158120
+## 279 PyrT19 A.Methanol         PreD1 P.Tai.IN 0.000328 0.002680  0.12238806
+## 280 PyrT20 A.Methanol         PreD1 P.Tai.IN 0.000450 0.004500  0.10000000
+## 281 PyrT30 A.Methanol         PreD1 P.Tai.IN 0.000471 0.003430  0.13731778
+## 282 PyrT37 A.Methanol         PreD1 P.Tai.IN 0.000591 0.005150  0.11475728
+## 283 PyrT27 A.Methanol          PuD0 P.Tai.IN 0.000736 0.000534  1.37827715
+## 284 PyrT34 A.Methanol          PuD0 P.Tai.IN 0.000720 0.001380  0.52173913
+## 285 PyrT35 A.Methanol          PuD0 P.Tai.IN 0.001160 0.000939  1.23535676
+## 286 PyrT36 A.Methanol          PuD0 P.Tai.IN 0.001000 0.001220  0.81967213
+## 287 PyrT44 A.Methanol          PuD0 P.Tai.IN 0.000213 0.000717  0.29707113
+## 288 PyrT54      B.5mM         PreD1 P.Tai.IN 0.000201 0.001430  0.14055944
+## 289 PyrT55      B.5mM         PreD1 P.Tai.IN 0.000440 0.003510  0.12535613
+## 290 PyrT56      B.5mM         PreD1 P.Tai.IN 0.000325 0.002580  0.12596899
+## 291 PyrT57      B.5mM         PreD1 P.Tai.IN 0.000794 0.003140  0.25286624
+## 292 PyrT61      B.5mM         PreD1 P.Tai.IN 0.000528 0.002640  0.20000000
+## 293 PyrT62      B.5mM         PreD1 P.Tai.IN 0.000657 0.003120  0.21057692
+## 294 PyrT52      B.5mM          PuD0 P.Tai.IN 0.000356 0.001940  0.18350515
+## 295 PyrT58      B.5mM          PuD0 P.Tai.IN 0.000440 0.002640  0.16666667
+## 296 PyrT59      B.5mM          PuD0 P.Tai.IN 0.000293 0.002130  0.13755869
+## 297 PyrT60      B.5mM          PuD0 P.Tai.IN 0.000182 0.002030  0.08965517
+## 298 PyrT63      B.5mM          PuD0 P.Tai.IN 0.000569 0.001820  0.31263736
+## 299 PyrT64      B.5mM          PuD0 P.Tai.IN 0.000220 0.000970  0.22680412
 ```
 
 ```r
@@ -329,30 +280,30 @@ PkTaiDELbox
 ```
 
 ```
-##     Sample  Treatment Stage.treated      Gene SDM.gene   rp49.1   rp49.2
-## 300 PyrT21 A.Methanol         PreD1 Q.Tai-DEL 2.33e-05 0.001770 0.002420
-## 301 PyrT11 A.Methanol         PreD1 Q.Tai-DEL 2.18e-05 0.004210 0.004680
-## 302 PyrT19 A.Methanol         PreD1 Q.Tai-DEL 3.30e-05 0.002010 0.002680
-## 303 PyrT20 A.Methanol         PreD1 Q.Tai-DEL 5.12e-05 0.005270 0.004500
-## 304 PyrT30 A.Methanol         PreD1 Q.Tai-DEL 6.59e-05 0.003630 0.003430
-## 305 PyrT37 A.Methanol         PreD1 Q.Tai-DEL 7.69e-05 0.005320 0.005150
-## 306 PyrT27 A.Methanol          PuD0 Q.Tai-DEL 2.35e-05 0.000354 0.000534
-## 307 PyrT34 A.Methanol          PuD0 Q.Tai-DEL 1.32e-05 0.001180 0.001380
-## 308 PyrT35 A.Methanol          PuD0 Q.Tai-DEL 2.80e-05 0.001390 0.000939
-## 309 PyrT36 A.Methanol          PuD0 Q.Tai-DEL 2.04e-05 0.000917 0.001220
-## 310 PyrT44 A.Methanol          PuD0 Q.Tai-DEL 5.47e-06 0.000394 0.000717
-## 311 PyrT54      B.5mM         PreD1 Q.Tai-DEL 1.41e-05 0.000786 0.001430
-## 312 PyrT55      B.5mM         PreD1 Q.Tai-DEL 7.04e-05 0.002350 0.003510
-## 313 PyrT56      B.5mM         PreD1 Q.Tai-DEL 4.16e-05 0.001280 0.002580
-## 314 PyrT57      B.5mM         PreD1 Q.Tai-DEL 6.59e-05 0.001690 0.003140
-## 315 PyrT61      B.5mM         PreD1 Q.Tai-DEL 5.24e-05 0.002080 0.002640
-## 316 PyrT62      B.5mM         PreD1 Q.Tai-DEL 1.47e-04 0.005070 0.003120
-## 317 PyrT52      B.5mM          PuD0 Q.Tai-DEL 2.65e-05 0.007550 0.001940
-## 318 PyrT58      B.5mM          PuD0 Q.Tai-DEL 2.43e-05 0.000361 0.002640
-## 319 PyrT59      B.5mM          PuD0 Q.Tai-DEL 1.91e-05 0.001370 0.002130
-## 320 PyrT60      B.5mM          PuD0 Q.Tai-DEL 1.45e-05 0.001480 0.002030
-## 321 PyrT63      B.5mM          PuD0 Q.Tai-DEL 1.12e-05 0.001020 0.001820
-## 322 PyrT64      B.5mM          PuD0 Q.Tai-DEL 4.64e-06 0.000464 0.000970
+##     Sample  Treatment Stage.treated      Gene SDM.gene   rp49.2
+## 300 PyrT21 A.Methanol         PreD1 Q.Tai-DEL 2.33e-05 0.002420
+## 301 PyrT11 A.Methanol         PreD1 Q.Tai-DEL 2.18e-05 0.004680
+## 302 PyrT19 A.Methanol         PreD1 Q.Tai-DEL 3.30e-05 0.002680
+## 303 PyrT20 A.Methanol         PreD1 Q.Tai-DEL 5.12e-05 0.004500
+## 304 PyrT30 A.Methanol         PreD1 Q.Tai-DEL 6.59e-05 0.003430
+## 305 PyrT37 A.Methanol         PreD1 Q.Tai-DEL 7.69e-05 0.005150
+## 306 PyrT27 A.Methanol          PuD0 Q.Tai-DEL 2.35e-05 0.000534
+## 307 PyrT34 A.Methanol          PuD0 Q.Tai-DEL 1.32e-05 0.001380
+## 308 PyrT35 A.Methanol          PuD0 Q.Tai-DEL 2.80e-05 0.000939
+## 309 PyrT36 A.Methanol          PuD0 Q.Tai-DEL 2.04e-05 0.001220
+## 310 PyrT44 A.Methanol          PuD0 Q.Tai-DEL 5.47e-06 0.000717
+## 311 PyrT54      B.5mM         PreD1 Q.Tai-DEL 1.41e-05 0.001430
+## 312 PyrT55      B.5mM         PreD1 Q.Tai-DEL 7.04e-05 0.003510
+## 313 PyrT56      B.5mM         PreD1 Q.Tai-DEL 4.16e-05 0.002580
+## 314 PyrT57      B.5mM         PreD1 Q.Tai-DEL 6.59e-05 0.003140
+## 315 PyrT61      B.5mM         PreD1 Q.Tai-DEL 5.24e-05 0.002640
+## 316 PyrT62      B.5mM         PreD1 Q.Tai-DEL 1.47e-04 0.003120
+## 317 PyrT52      B.5mM          PuD0 Q.Tai-DEL 2.65e-05 0.001940
+## 318 PyrT58      B.5mM          PuD0 Q.Tai-DEL 2.43e-05 0.002640
+## 319 PyrT59      B.5mM          PuD0 Q.Tai-DEL 1.91e-05 0.002130
+## 320 PyrT60      B.5mM          PuD0 Q.Tai-DEL 1.45e-05 0.002030
+## 321 PyrT63      B.5mM          PuD0 Q.Tai-DEL 1.12e-05 0.001820
+## 322 PyrT64      B.5mM          PuD0 Q.Tai-DEL 4.64e-06 0.000970
 ##     gene.normal
 ## 300 0.009628099
 ## 301 0.004658120
@@ -534,54 +485,30 @@ PkKrh1box
 ```
 
 ```
-##    Sample  Treatment Stage.treated    Gene SDM.gene   rp49.1   rp49.2
-## 1  PyrT21 A.Methanol         PreD1 D.kr-h1 1.87e-05 0.001770 0.002420
-## 2  PyrT11 A.Methanol         PreD1 D.kr-h1 1.99e-05 0.004210 0.004680
-## 3  PyrT19 A.Methanol         PreD1 D.kr-h1 8.93e-06 0.002010 0.002680
-## 4  PyrT20 A.Methanol         PreD1 D.kr-h1 1.64e-05 0.005270 0.004500
-## 5  PyrT30 A.Methanol         PreD1 D.kr-h1 1.66e-05 0.003630 0.003430
-## 6  PyrT37 A.Methanol         PreD1 D.kr-h1 1.32e-05 0.005320 0.005150
-## 7  PyrT27 A.Methanol          PuD0 D.kr-h1 3.24e-05 0.000354 0.000534
-## 8  PyrT34 A.Methanol          PuD0 D.kr-h1 1.63e-05 0.001180 0.001380
-## 9  PyrT35 A.Methanol          PuD0 D.kr-h1 2.65e-05 0.001390 0.000939
-## 10 PyrT36 A.Methanol          PuD0 D.kr-h1 1.80e-05 0.000917 0.001220
-## 11 PyrT44 A.Methanol          PuD0 D.kr-h1 1.20e-05 0.000394 0.000717
-## 12 PyrT54      B.5mM         PreD1 D.kr-h1 2.61e-04 0.000786 0.001430
-## 13 PyrT55      B.5mM         PreD1 D.kr-h1 9.79e-04 0.002350 0.003510
-## 14 PyrT56      B.5mM         PreD1 D.kr-h1 4.73e-04 0.001280 0.002580
-## 15 PyrT57      B.5mM         PreD1 D.kr-h1 5.55e-04 0.001690 0.003140
-## 16 PyrT61      B.5mM         PreD1 D.kr-h1 5.37e-04 0.002080 0.002640
-## 17 PyrT62      B.5mM         PreD1 D.kr-h1 9.34e-04 0.005070 0.003120
-## 18 PyrT52      B.5mM          PuD0 D.kr-h1 4.85e-04 0.007550 0.001940
-## 19 PyrT58      B.5mM          PuD0 D.kr-h1 4.98e-04 0.000361 0.002640
-## 20 PyrT59      B.5mM          PuD0 D.kr-h1 2.88e-04 0.001370 0.002130
-## 21 PyrT60      B.5mM          PuD0 D.kr-h1 2.44e-04 0.001480 0.002030
-## 22 PyrT63      B.5mM          PuD0 D.kr-h1 2.66e-04 0.001020 0.001820
-## 23 PyrT64      B.5mM          PuD0 D.kr-h1 1.64e-04 0.000464 0.000970
-##    gene.normal
-## 1  0.007727273
-## 2  0.004252137
-## 3  0.003332090
-## 4  0.003644444
-## 5  0.004839650
-## 6  0.002563107
-## 7  0.060674157
-## 8  0.011811594
-## 9  0.028221512
-## 10 0.014754098
-## 11 0.016736402
-## 12 0.182517483
-## 13 0.278917379
-## 14 0.183333333
-## 15 0.176751592
-## 16 0.203409091
-## 17 0.299358974
-## 18 0.250000000
-## 19 0.188636364
-## 20 0.135211268
-## 21 0.120197044
-## 22 0.146153846
-## 23 0.169072165
+##    Sample  Treatment Stage.treated    Gene SDM.gene   rp49.2 gene.normal
+## 1  PyrT21 A.Methanol         PreD1 D.kr-h1 1.87e-05 0.002420 0.007727273
+## 2  PyrT11 A.Methanol         PreD1 D.kr-h1 1.99e-05 0.004680 0.004252137
+## 3  PyrT19 A.Methanol         PreD1 D.kr-h1 8.93e-06 0.002680 0.003332090
+## 4  PyrT20 A.Methanol         PreD1 D.kr-h1 1.64e-05 0.004500 0.003644444
+## 5  PyrT30 A.Methanol         PreD1 D.kr-h1 1.66e-05 0.003430 0.004839650
+## 6  PyrT37 A.Methanol         PreD1 D.kr-h1 1.32e-05 0.005150 0.002563107
+## 7  PyrT27 A.Methanol          PuD0 D.kr-h1 3.24e-05 0.000534 0.060674157
+## 8  PyrT34 A.Methanol          PuD0 D.kr-h1 1.63e-05 0.001380 0.011811594
+## 9  PyrT35 A.Methanol          PuD0 D.kr-h1 2.65e-05 0.000939 0.028221512
+## 10 PyrT36 A.Methanol          PuD0 D.kr-h1 1.80e-05 0.001220 0.014754098
+## 11 PyrT44 A.Methanol          PuD0 D.kr-h1 1.20e-05 0.000717 0.016736402
+## 12 PyrT54      B.5mM         PreD1 D.kr-h1 2.61e-04 0.001430 0.182517483
+## 13 PyrT55      B.5mM         PreD1 D.kr-h1 9.79e-04 0.003510 0.278917379
+## 14 PyrT56      B.5mM         PreD1 D.kr-h1 4.73e-04 0.002580 0.183333333
+## 15 PyrT57      B.5mM         PreD1 D.kr-h1 5.55e-04 0.003140 0.176751592
+## 16 PyrT61      B.5mM         PreD1 D.kr-h1 5.37e-04 0.002640 0.203409091
+## 17 PyrT62      B.5mM         PreD1 D.kr-h1 9.34e-04 0.003120 0.299358974
+## 18 PyrT52      B.5mM          PuD0 D.kr-h1 4.85e-04 0.001940 0.250000000
+## 19 PyrT58      B.5mM          PuD0 D.kr-h1 4.98e-04 0.002640 0.188636364
+## 20 PyrT59      B.5mM          PuD0 D.kr-h1 2.88e-04 0.002130 0.135211268
+## 21 PyrT60      B.5mM          PuD0 D.kr-h1 2.44e-04 0.002030 0.120197044
+## 22 PyrT63      B.5mM          PuD0 D.kr-h1 2.66e-04 0.001820 0.146153846
+## 23 PyrT64      B.5mM          PuD0 D.kr-h1 1.64e-04 0.000970 0.169072165
 ```
 
 ```r
@@ -620,30 +547,30 @@ PkKrh1Abox
 ```
 
 ```
-##    Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 24 PyrT21 A.Methanol         PreD1 E.Pkkr-h1A 4.43e-06 0.001770 0.002420
-## 25 PyrT11 A.Methanol         PreD1 E.Pkkr-h1A 5.73e-06 0.004210 0.004680
-## 26 PyrT19 A.Methanol         PreD1 E.Pkkr-h1A 1.93e-06 0.002010 0.002680
-## 27 PyrT20 A.Methanol         PreD1 E.Pkkr-h1A 3.32e-06 0.005270 0.004500
-## 28 PyrT30 A.Methanol         PreD1 E.Pkkr-h1A 3.74e-06 0.003630 0.003430
-## 29 PyrT37 A.Methanol         PreD1 E.Pkkr-h1A 4.30e-06 0.005320 0.005150
-## 30 PyrT27 A.Methanol          PuD0 E.Pkkr-h1A 4.80e-06 0.000354 0.000534
-## 31 PyrT34 A.Methanol          PuD0 E.Pkkr-h1A 3.63e-06 0.001180 0.001380
-## 32 PyrT35 A.Methanol          PuD0 E.Pkkr-h1A 5.40e-06 0.001390 0.000939
-## 33 PyrT36 A.Methanol          PuD0 E.Pkkr-h1A 2.44e-06 0.000917 0.001220
-## 34 PyrT44 A.Methanol          PuD0 E.Pkkr-h1A 2.03e-06 0.000394 0.000717
-## 35 PyrT54      B.5mM         PreD1 E.Pkkr-h1A 6.53e-05 0.000786 0.001430
-## 36 PyrT55      B.5mM         PreD1 E.Pkkr-h1A 3.12e-04 0.002350 0.003510
-## 37 PyrT56      B.5mM         PreD1 E.Pkkr-h1A 1.42e-04 0.001280 0.002580
-## 38 PyrT57      B.5mM         PreD1 E.Pkkr-h1A 1.72e-04 0.001690 0.003140
-## 39 PyrT61      B.5mM         PreD1 E.Pkkr-h1A 1.74e-04 0.002080 0.002640
-## 40 PyrT62      B.5mM         PreD1 E.Pkkr-h1A 2.19e-04 0.005070 0.003120
-## 41 PyrT52      B.5mM          PuD0 E.Pkkr-h1A 8.27e-05 0.007550 0.001940
-## 42 PyrT58      B.5mM          PuD0 E.Pkkr-h1A 4.86e-05 0.000361 0.002640
-## 43 PyrT59      B.5mM          PuD0 E.Pkkr-h1A 2.52e-05 0.001370 0.002130
-## 44 PyrT60      B.5mM          PuD0 E.Pkkr-h1A 3.08e-05 0.001480 0.002030
-## 45 PyrT63      B.5mM          PuD0 E.Pkkr-h1A 2.54e-05 0.001020 0.001820
-## 46 PyrT64      B.5mM          PuD0 E.Pkkr-h1A 1.42e-05 0.000464 0.000970
+##    Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 24 PyrT21 A.Methanol         PreD1 E.Pkkr-h1A 4.43e-06 0.002420
+## 25 PyrT11 A.Methanol         PreD1 E.Pkkr-h1A 5.73e-06 0.004680
+## 26 PyrT19 A.Methanol         PreD1 E.Pkkr-h1A 1.93e-06 0.002680
+## 27 PyrT20 A.Methanol         PreD1 E.Pkkr-h1A 3.32e-06 0.004500
+## 28 PyrT30 A.Methanol         PreD1 E.Pkkr-h1A 3.74e-06 0.003430
+## 29 PyrT37 A.Methanol         PreD1 E.Pkkr-h1A 4.30e-06 0.005150
+## 30 PyrT27 A.Methanol          PuD0 E.Pkkr-h1A 4.80e-06 0.000534
+## 31 PyrT34 A.Methanol          PuD0 E.Pkkr-h1A 3.63e-06 0.001380
+## 32 PyrT35 A.Methanol          PuD0 E.Pkkr-h1A 5.40e-06 0.000939
+## 33 PyrT36 A.Methanol          PuD0 E.Pkkr-h1A 2.44e-06 0.001220
+## 34 PyrT44 A.Methanol          PuD0 E.Pkkr-h1A 2.03e-06 0.000717
+## 35 PyrT54      B.5mM         PreD1 E.Pkkr-h1A 6.53e-05 0.001430
+## 36 PyrT55      B.5mM         PreD1 E.Pkkr-h1A 3.12e-04 0.003510
+## 37 PyrT56      B.5mM         PreD1 E.Pkkr-h1A 1.42e-04 0.002580
+## 38 PyrT57      B.5mM         PreD1 E.Pkkr-h1A 1.72e-04 0.003140
+## 39 PyrT61      B.5mM         PreD1 E.Pkkr-h1A 1.74e-04 0.002640
+## 40 PyrT62      B.5mM         PreD1 E.Pkkr-h1A 2.19e-04 0.003120
+## 41 PyrT52      B.5mM          PuD0 E.Pkkr-h1A 8.27e-05 0.001940
+## 42 PyrT58      B.5mM          PuD0 E.Pkkr-h1A 4.86e-05 0.002640
+## 43 PyrT59      B.5mM          PuD0 E.Pkkr-h1A 2.52e-05 0.002130
+## 44 PyrT60      B.5mM          PuD0 E.Pkkr-h1A 3.08e-05 0.002030
+## 45 PyrT63      B.5mM          PuD0 E.Pkkr-h1A 2.54e-05 0.001820
+## 46 PyrT64      B.5mM          PuD0 E.Pkkr-h1A 1.42e-05 0.000970
 ##     gene.normal
 ## 24 0.0018305785
 ## 25 0.0012243590
@@ -706,30 +633,30 @@ PkKrh1Bbox
 ```
 
 ```
-##    Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 47 PyrT21 A.Methanol         PreD1 F.Pkkr-h1B 6.83e-06 0.001770 0.002420
-## 48 PyrT11 A.Methanol         PreD1 F.Pkkr-h1B 2.66e-08 0.004210 0.004680
-## 49 PyrT19 A.Methanol         PreD1 F.Pkkr-h1B 8.81e-08 0.002010 0.002680
-## 50 PyrT20 A.Methanol         PreD1 F.Pkkr-h1B 1.14e-08 0.005270 0.004500
-## 51 PyrT30 A.Methanol         PreD1 F.Pkkr-h1B 8.27e-09 0.003630 0.003430
-## 52 PyrT37 A.Methanol         PreD1 F.Pkkr-h1B 2.64e-08 0.005320 0.005150
-## 53 PyrT27 A.Methanol          PuD0 F.Pkkr-h1B 3.34e-08 0.000354 0.000534
-## 54 PyrT34 A.Methanol          PuD0 F.Pkkr-h1B 3.03e-07 0.001180 0.001380
-## 55 PyrT35 A.Methanol          PuD0 F.Pkkr-h1B 4.83e-08 0.001390 0.000939
-## 56 PyrT36 A.Methanol          PuD0 F.Pkkr-h1B 3.21e-07 0.000917 0.001220
-## 57 PyrT44 A.Methanol          PuD0 F.Pkkr-h1B 1.21e-06 0.000394 0.000717
-## 58 PyrT54      B.5mM         PreD1 F.Pkkr-h1B 9.56e-08 0.000786 0.001430
-## 59 PyrT55      B.5mM         PreD1 F.Pkkr-h1B 9.12e-07 0.002350 0.003510
-## 60 PyrT56      B.5mM         PreD1 F.Pkkr-h1B 3.64e-07 0.001280 0.002580
-## 61 PyrT57      B.5mM         PreD1 F.Pkkr-h1B 2.19e-07 0.001690 0.003140
-## 62 PyrT61      B.5mM         PreD1 F.Pkkr-h1B 2.75e-07 0.002080 0.002640
-## 63 PyrT62      B.5mM         PreD1 F.Pkkr-h1B 4.78e-07 0.005070 0.003120
-## 64 PyrT52      B.5mM          PuD0 F.Pkkr-h1B 2.96e-07 0.007550 0.001940
-## 65 PyrT58      B.5mM          PuD0 F.Pkkr-h1B 1.52e-07 0.000361 0.002640
-## 66 PyrT59      B.5mM          PuD0 F.Pkkr-h1B 5.59e-08 0.001370 0.002130
-## 67 PyrT60      B.5mM          PuD0 F.Pkkr-h1B 1.06e-07 0.001480 0.002030
-## 68 PyrT63      B.5mM          PuD0 F.Pkkr-h1B 3.60e-08 0.001020 0.001820
-## 69 PyrT64      B.5mM          PuD0 F.Pkkr-h1B 7.64e-07 0.000464 0.000970
+##    Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 47 PyrT21 A.Methanol         PreD1 F.Pkkr-h1B 6.83e-06 0.002420
+## 48 PyrT11 A.Methanol         PreD1 F.Pkkr-h1B 2.66e-08 0.004680
+## 49 PyrT19 A.Methanol         PreD1 F.Pkkr-h1B 8.81e-08 0.002680
+## 50 PyrT20 A.Methanol         PreD1 F.Pkkr-h1B 1.14e-08 0.004500
+## 51 PyrT30 A.Methanol         PreD1 F.Pkkr-h1B 8.27e-09 0.003430
+## 52 PyrT37 A.Methanol         PreD1 F.Pkkr-h1B 2.64e-08 0.005150
+## 53 PyrT27 A.Methanol          PuD0 F.Pkkr-h1B 3.34e-08 0.000534
+## 54 PyrT34 A.Methanol          PuD0 F.Pkkr-h1B 3.03e-07 0.001380
+## 55 PyrT35 A.Methanol          PuD0 F.Pkkr-h1B 4.83e-08 0.000939
+## 56 PyrT36 A.Methanol          PuD0 F.Pkkr-h1B 3.21e-07 0.001220
+## 57 PyrT44 A.Methanol          PuD0 F.Pkkr-h1B 1.21e-06 0.000717
+## 58 PyrT54      B.5mM         PreD1 F.Pkkr-h1B 9.56e-08 0.001430
+## 59 PyrT55      B.5mM         PreD1 F.Pkkr-h1B 9.12e-07 0.003510
+## 60 PyrT56      B.5mM         PreD1 F.Pkkr-h1B 3.64e-07 0.002580
+## 61 PyrT57      B.5mM         PreD1 F.Pkkr-h1B 2.19e-07 0.003140
+## 62 PyrT61      B.5mM         PreD1 F.Pkkr-h1B 2.75e-07 0.002640
+## 63 PyrT62      B.5mM         PreD1 F.Pkkr-h1B 4.78e-07 0.003120
+## 64 PyrT52      B.5mM          PuD0 F.Pkkr-h1B 2.96e-07 0.001940
+## 65 PyrT58      B.5mM          PuD0 F.Pkkr-h1B 1.52e-07 0.002640
+## 66 PyrT59      B.5mM          PuD0 F.Pkkr-h1B 5.59e-08 0.002130
+## 67 PyrT60      B.5mM          PuD0 F.Pkkr-h1B 1.06e-07 0.002030
+## 68 PyrT63      B.5mM          PuD0 F.Pkkr-h1B 3.60e-08 0.001820
+## 69 PyrT64      B.5mM          PuD0 F.Pkkr-h1B 7.64e-07 0.000970
 ##     gene.normal
 ## 47 2.822314e-03
 ## 48 5.683761e-06
@@ -906,7 +833,7 @@ t.test(gene.normal~Treatment,data=pupatestPkkrh1B)
 
 ```r
 Figure5<-subset(dataA3,Gene=="SDM.Pkbr1"|Gene=="SDM.Pkbr2"|Gene=="SDM.Pkbr3")
-pFig5<-ggplot(Figure5, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFig5<-ggplot(Figure5, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
    geom_point(aes(linetype=Sex))+
    geom_line(aes(linetype=Sex))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
@@ -923,7 +850,7 @@ pFig5+facet_grid(Gene~.,scale="free")
 
 ```r
 FigureS7A<-subset(dataA3,Gene=="SDM.Pkbr1.Z2"|Gene=="SDM.Pkbr1.Z4"|Gene=="SDM.Pkbr2.Z2"|Gene=="SDM.Pkbr2.Z4"|Gene=="SDM.Pkbr3.Z2")
-pFigS7A<-ggplot(FigureS7A, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFigS7A<-ggplot(FigureS7A, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
    geom_point(aes(linetype=Sex))+
    geom_line(aes(linetype=Sex))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
@@ -945,54 +872,30 @@ Pkbr1box
 ```
 
 ```
-##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.1   rp49.2
-## 93  PyrT21 A.Methanol         PreD1 G.Pkbr1 7.81e-06 0.001770 0.002420
-## 94  PyrT11 A.Methanol         PreD1 G.Pkbr1 1.21e-03 0.004210 0.004680
-## 95  PyrT19 A.Methanol         PreD1 G.Pkbr1 9.04e-06 0.002010 0.002680
-## 96  PyrT20 A.Methanol         PreD1 G.Pkbr1 4.92e-05 0.005270 0.004500
-## 97  PyrT30 A.Methanol         PreD1 G.Pkbr1 4.83e-05 0.003630 0.003430
-## 98  PyrT37 A.Methanol         PreD1 G.Pkbr1 1.84e-04 0.005320 0.005150
-## 99  PyrT27 A.Methanol          PuD0 G.Pkbr1 1.10e-05 0.000354 0.000534
-## 100 PyrT34 A.Methanol          PuD0 G.Pkbr1 1.48e-05 0.001180 0.001380
-## 101 PyrT35 A.Methanol          PuD0 G.Pkbr1 5.93e-06 0.001390 0.000939
-## 102 PyrT36 A.Methanol          PuD0 G.Pkbr1 2.07e-06 0.000917 0.001220
-## 103 PyrT44 A.Methanol          PuD0 G.Pkbr1 8.59e-07 0.000394 0.000717
-## 104 PyrT54      B.5mM         PreD1 G.Pkbr1 4.27e-06 0.000786 0.001430
-## 105 PyrT55      B.5mM         PreD1 G.Pkbr1 1.17e-05 0.002350 0.003510
-## 106 PyrT56      B.5mM         PreD1 G.Pkbr1 4.43e-06 0.001280 0.002580
-## 107 PyrT57      B.5mM         PreD1 G.Pkbr1 3.26e-05 0.001690 0.003140
-## 108 PyrT61      B.5mM         PreD1 G.Pkbr1 1.48e-05 0.002080 0.002640
-## 109 PyrT62      B.5mM         PreD1 G.Pkbr1 3.95e-05 0.005070 0.003120
-## 110 PyrT52      B.5mM          PuD0 G.Pkbr1 6.21e-06 0.007550 0.001940
-## 111 PyrT58      B.5mM          PuD0 G.Pkbr1 4.51e-06 0.000361 0.002640
-## 112 PyrT59      B.5mM          PuD0 G.Pkbr1 1.52e-06 0.001370 0.002130
-## 113 PyrT60      B.5mM          PuD0 G.Pkbr1 4.28e-07 0.001480 0.002030
-## 114 PyrT63      B.5mM          PuD0 G.Pkbr1 1.10e-06 0.001020 0.001820
-## 115 PyrT64      B.5mM          PuD0 G.Pkbr1 4.09e-07 0.000464 0.000970
-##      gene.normal
-## 93  0.0032272727
-## 94  0.2585470085
-## 95  0.0033731343
-## 96  0.0109333333
-## 97  0.0140816327
-## 98  0.0357281553
-## 99  0.0205992509
-## 100 0.0107246377
-## 101 0.0063152290
-## 102 0.0016967213
-## 103 0.0011980474
-## 104 0.0029860140
-## 105 0.0033333333
-## 106 0.0017170543
-## 107 0.0103821656
-## 108 0.0056060606
-## 109 0.0126602564
-## 110 0.0032010309
-## 111 0.0017083333
-## 112 0.0007136150
-## 113 0.0002108374
-## 114 0.0006043956
-## 115 0.0004216495
+##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.2  gene.normal
+## 93  PyrT21 A.Methanol         PreD1 G.Pkbr1 7.81e-06 0.002420 0.0032272727
+## 94  PyrT11 A.Methanol         PreD1 G.Pkbr1 1.21e-03 0.004680 0.2585470085
+## 95  PyrT19 A.Methanol         PreD1 G.Pkbr1 9.04e-06 0.002680 0.0033731343
+## 96  PyrT20 A.Methanol         PreD1 G.Pkbr1 4.92e-05 0.004500 0.0109333333
+## 97  PyrT30 A.Methanol         PreD1 G.Pkbr1 4.83e-05 0.003430 0.0140816327
+## 98  PyrT37 A.Methanol         PreD1 G.Pkbr1 1.84e-04 0.005150 0.0357281553
+## 99  PyrT27 A.Methanol          PuD0 G.Pkbr1 1.10e-05 0.000534 0.0205992509
+## 100 PyrT34 A.Methanol          PuD0 G.Pkbr1 1.48e-05 0.001380 0.0107246377
+## 101 PyrT35 A.Methanol          PuD0 G.Pkbr1 5.93e-06 0.000939 0.0063152290
+## 102 PyrT36 A.Methanol          PuD0 G.Pkbr1 2.07e-06 0.001220 0.0016967213
+## 103 PyrT44 A.Methanol          PuD0 G.Pkbr1 8.59e-07 0.000717 0.0011980474
+## 104 PyrT54      B.5mM         PreD1 G.Pkbr1 4.27e-06 0.001430 0.0029860140
+## 105 PyrT55      B.5mM         PreD1 G.Pkbr1 1.17e-05 0.003510 0.0033333333
+## 106 PyrT56      B.5mM         PreD1 G.Pkbr1 4.43e-06 0.002580 0.0017170543
+## 107 PyrT57      B.5mM         PreD1 G.Pkbr1 3.26e-05 0.003140 0.0103821656
+## 108 PyrT61      B.5mM         PreD1 G.Pkbr1 1.48e-05 0.002640 0.0056060606
+## 109 PyrT62      B.5mM         PreD1 G.Pkbr1 3.95e-05 0.003120 0.0126602564
+## 110 PyrT52      B.5mM          PuD0 G.Pkbr1 6.21e-06 0.001940 0.0032010309
+## 111 PyrT58      B.5mM          PuD0 G.Pkbr1 4.51e-06 0.002640 0.0017083333
+## 112 PyrT59      B.5mM          PuD0 G.Pkbr1 1.52e-06 0.002130 0.0007136150
+## 113 PyrT60      B.5mM          PuD0 G.Pkbr1 4.28e-07 0.002030 0.0002108374
+## 114 PyrT63      B.5mM          PuD0 G.Pkbr1 1.10e-06 0.001820 0.0006043956
+## 115 PyrT64      B.5mM          PuD0 G.Pkbr1 4.09e-07 0.000970 0.0004216495
 ```
 
 ```r
@@ -1031,30 +934,30 @@ Pkbr1Z2box
 ```
 
 ```
-##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 162 PyrT21 A.Methanol         PreD1 H.Pkbr1.Z2 8.22e-05 0.001770 0.002420
-## 163 PyrT11 A.Methanol         PreD1 H.Pkbr1.Z2 8.16e-05 0.004210 0.004680
-## 164 PyrT19 A.Methanol         PreD1 H.Pkbr1.Z2 6.33e-05 0.002010 0.002680
-## 165 PyrT20 A.Methanol         PreD1 H.Pkbr1.Z2 8.40e-05 0.005270 0.004500
-## 166 PyrT30 A.Methanol         PreD1 H.Pkbr1.Z2 6.07e-05 0.003630 0.003430
-## 167 PyrT37 A.Methanol         PreD1 H.Pkbr1.Z2 1.11e-04 0.005320 0.005150
-## 168 PyrT27 A.Methanol          PuD0 H.Pkbr1.Z2 1.44e-05 0.000354 0.000534
-## 169 PyrT34 A.Methanol          PuD0 H.Pkbr1.Z2 3.86e-05 0.001180 0.001380
-## 170 PyrT35 A.Methanol          PuD0 H.Pkbr1.Z2 3.89e-05 0.001390 0.000939
-## 171 PyrT36 A.Methanol          PuD0 H.Pkbr1.Z2 2.87e-05 0.000917 0.001220
-## 172 PyrT44 A.Methanol          PuD0 H.Pkbr1.Z2 2.31e-05 0.000394 0.000717
-## 173 PyrT54      B.5mM         PreD1 H.Pkbr1.Z2 4.71e-05 0.000786 0.001430
-## 174 PyrT55      B.5mM         PreD1 H.Pkbr1.Z2 5.20e-05 0.002350 0.003510
-## 175 PyrT56      B.5mM         PreD1 H.Pkbr1.Z2 2.89e-05 0.001280 0.002580
-## 176 PyrT57      B.5mM         PreD1 H.Pkbr1.Z2 6.84e-05 0.001690 0.003140
-## 177 PyrT61      B.5mM         PreD1 H.Pkbr1.Z2 2.75e-05 0.002080 0.002640
-## 178 PyrT62      B.5mM         PreD1 H.Pkbr1.Z2 4.39e-05 0.005070 0.003120
-## 179 PyrT52      B.5mM          PuD0 H.Pkbr1.Z2 1.11e-05 0.007550 0.001940
-## 180 PyrT58      B.5mM          PuD0 H.Pkbr1.Z2 9.55e-06 0.000361 0.002640
-## 181 PyrT59      B.5mM          PuD0 H.Pkbr1.Z2 9.29e-06 0.001370 0.002130
-## 182 PyrT60      B.5mM          PuD0 H.Pkbr1.Z2 5.63e-06 0.001480 0.002030
-## 183 PyrT63      B.5mM          PuD0 H.Pkbr1.Z2 1.74e-05 0.001020 0.001820
-## 184 PyrT64      B.5mM          PuD0 H.Pkbr1.Z2 9.76e-06 0.000464 0.000970
+##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 162 PyrT21 A.Methanol         PreD1 H.Pkbr1.Z2 8.22e-05 0.002420
+## 163 PyrT11 A.Methanol         PreD1 H.Pkbr1.Z2 8.16e-05 0.004680
+## 164 PyrT19 A.Methanol         PreD1 H.Pkbr1.Z2 6.33e-05 0.002680
+## 165 PyrT20 A.Methanol         PreD1 H.Pkbr1.Z2 8.40e-05 0.004500
+## 166 PyrT30 A.Methanol         PreD1 H.Pkbr1.Z2 6.07e-05 0.003430
+## 167 PyrT37 A.Methanol         PreD1 H.Pkbr1.Z2 1.11e-04 0.005150
+## 168 PyrT27 A.Methanol          PuD0 H.Pkbr1.Z2 1.44e-05 0.000534
+## 169 PyrT34 A.Methanol          PuD0 H.Pkbr1.Z2 3.86e-05 0.001380
+## 170 PyrT35 A.Methanol          PuD0 H.Pkbr1.Z2 3.89e-05 0.000939
+## 171 PyrT36 A.Methanol          PuD0 H.Pkbr1.Z2 2.87e-05 0.001220
+## 172 PyrT44 A.Methanol          PuD0 H.Pkbr1.Z2 2.31e-05 0.000717
+## 173 PyrT54      B.5mM         PreD1 H.Pkbr1.Z2 4.71e-05 0.001430
+## 174 PyrT55      B.5mM         PreD1 H.Pkbr1.Z2 5.20e-05 0.003510
+## 175 PyrT56      B.5mM         PreD1 H.Pkbr1.Z2 2.89e-05 0.002580
+## 176 PyrT57      B.5mM         PreD1 H.Pkbr1.Z2 6.84e-05 0.003140
+## 177 PyrT61      B.5mM         PreD1 H.Pkbr1.Z2 2.75e-05 0.002640
+## 178 PyrT62      B.5mM         PreD1 H.Pkbr1.Z2 4.39e-05 0.003120
+## 179 PyrT52      B.5mM          PuD0 H.Pkbr1.Z2 1.11e-05 0.001940
+## 180 PyrT58      B.5mM          PuD0 H.Pkbr1.Z2 9.55e-06 0.002640
+## 181 PyrT59      B.5mM          PuD0 H.Pkbr1.Z2 9.29e-06 0.002130
+## 182 PyrT60      B.5mM          PuD0 H.Pkbr1.Z2 5.63e-06 0.002030
+## 183 PyrT63      B.5mM          PuD0 H.Pkbr1.Z2 1.74e-05 0.001820
+## 184 PyrT64      B.5mM          PuD0 H.Pkbr1.Z2 9.76e-06 0.000970
 ##     gene.normal
 ## 162 0.033966942
 ## 163 0.017435897
@@ -1117,30 +1020,30 @@ Pkbr1Z4box
 ```
 
 ```
-##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 185 PyrT21 A.Methanol         PreD1 I.Pkbr1.Z4 7.82e-05 0.001770 0.002420
-## 186 PyrT11 A.Methanol         PreD1 I.Pkbr1.Z4 7.51e-05 0.004210 0.004680
-## 187 PyrT19 A.Methanol         PreD1 I.Pkbr1.Z4 6.70e-05 0.002010 0.002680
-## 188 PyrT20 A.Methanol         PreD1 I.Pkbr1.Z4 7.87e-05 0.005270 0.004500
-## 189 PyrT30 A.Methanol         PreD1 I.Pkbr1.Z4 6.26e-05 0.003630 0.003430
-## 190 PyrT37 A.Methanol         PreD1 I.Pkbr1.Z4 1.14e-04 0.005320 0.005150
-## 191 PyrT27 A.Methanol          PuD0 I.Pkbr1.Z4 2.06e-05 0.000354 0.000534
-## 192 PyrT34 A.Methanol          PuD0 I.Pkbr1.Z4 4.29e-05 0.001180 0.001380
-## 193 PyrT35 A.Methanol          PuD0 I.Pkbr1.Z4 4.24e-05 0.001390 0.000939
-## 194 PyrT36 A.Methanol          PuD0 I.Pkbr1.Z4 3.33e-05 0.000917 0.001220
-## 195 PyrT44 A.Methanol          PuD0 I.Pkbr1.Z4 1.90e-05 0.000394 0.000717
-## 196 PyrT54      B.5mM         PreD1 I.Pkbr1.Z4 3.63e-05 0.000786 0.001430
-## 197 PyrT55      B.5mM         PreD1 I.Pkbr1.Z4 6.05e-05 0.002350 0.003510
-## 198 PyrT56      B.5mM         PreD1 I.Pkbr1.Z4 3.63e-05 0.001280 0.002580
-## 199 PyrT57      B.5mM         PreD1 I.Pkbr1.Z4 7.41e-05 0.001690 0.003140
-## 200 PyrT61      B.5mM         PreD1 I.Pkbr1.Z4 3.17e-05 0.002080 0.002640
-## 201 PyrT62      B.5mM         PreD1 I.Pkbr1.Z4 4.69e-05 0.005070 0.003120
-## 202 PyrT52      B.5mM          PuD0 I.Pkbr1.Z4 2.15e-05 0.007550 0.001940
-## 203 PyrT58      B.5mM          PuD0 I.Pkbr1.Z4 1.84e-05 0.000361 0.002640
-## 204 PyrT59      B.5mM          PuD0 I.Pkbr1.Z4 1.32e-05 0.001370 0.002130
-## 205 PyrT60      B.5mM          PuD0 I.Pkbr1.Z4 8.71e-06 0.001480 0.002030
-## 206 PyrT63      B.5mM          PuD0 I.Pkbr1.Z4 2.24e-05 0.001020 0.001820
-## 207 PyrT64      B.5mM          PuD0 I.Pkbr1.Z4 1.48e-05 0.000464 0.000970
+##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 185 PyrT21 A.Methanol         PreD1 I.Pkbr1.Z4 7.82e-05 0.002420
+## 186 PyrT11 A.Methanol         PreD1 I.Pkbr1.Z4 7.51e-05 0.004680
+## 187 PyrT19 A.Methanol         PreD1 I.Pkbr1.Z4 6.70e-05 0.002680
+## 188 PyrT20 A.Methanol         PreD1 I.Pkbr1.Z4 7.87e-05 0.004500
+## 189 PyrT30 A.Methanol         PreD1 I.Pkbr1.Z4 6.26e-05 0.003430
+## 190 PyrT37 A.Methanol         PreD1 I.Pkbr1.Z4 1.14e-04 0.005150
+## 191 PyrT27 A.Methanol          PuD0 I.Pkbr1.Z4 2.06e-05 0.000534
+## 192 PyrT34 A.Methanol          PuD0 I.Pkbr1.Z4 4.29e-05 0.001380
+## 193 PyrT35 A.Methanol          PuD0 I.Pkbr1.Z4 4.24e-05 0.000939
+## 194 PyrT36 A.Methanol          PuD0 I.Pkbr1.Z4 3.33e-05 0.001220
+## 195 PyrT44 A.Methanol          PuD0 I.Pkbr1.Z4 1.90e-05 0.000717
+## 196 PyrT54      B.5mM         PreD1 I.Pkbr1.Z4 3.63e-05 0.001430
+## 197 PyrT55      B.5mM         PreD1 I.Pkbr1.Z4 6.05e-05 0.003510
+## 198 PyrT56      B.5mM         PreD1 I.Pkbr1.Z4 3.63e-05 0.002580
+## 199 PyrT57      B.5mM         PreD1 I.Pkbr1.Z4 7.41e-05 0.003140
+## 200 PyrT61      B.5mM         PreD1 I.Pkbr1.Z4 3.17e-05 0.002640
+## 201 PyrT62      B.5mM         PreD1 I.Pkbr1.Z4 4.69e-05 0.003120
+## 202 PyrT52      B.5mM          PuD0 I.Pkbr1.Z4 2.15e-05 0.001940
+## 203 PyrT58      B.5mM          PuD0 I.Pkbr1.Z4 1.84e-05 0.002640
+## 204 PyrT59      B.5mM          PuD0 I.Pkbr1.Z4 1.32e-05 0.002130
+## 205 PyrT60      B.5mM          PuD0 I.Pkbr1.Z4 8.71e-06 0.002030
+## 206 PyrT63      B.5mM          PuD0 I.Pkbr1.Z4 2.24e-05 0.001820
+## 207 PyrT64      B.5mM          PuD0 I.Pkbr1.Z4 1.48e-05 0.000970
 ##     gene.normal
 ## 185 0.032314050
 ## 186 0.016047009
@@ -1203,54 +1106,30 @@ Pkbr3box
 ```
 
 ```
-##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.1   rp49.2
-## 139 PyrT21 A.Methanol         PreD1 M.Pkbr3 3.08e-04 0.001770 0.002420
-## 140 PyrT11 A.Methanol         PreD1 M.Pkbr3 3.36e-04 0.004210 0.004680
-## 141 PyrT19 A.Methanol         PreD1 M.Pkbr3 3.52e-04 0.002010 0.002680
-## 142 PyrT20 A.Methanol         PreD1 M.Pkbr3 5.97e-04 0.005270 0.004500
-## 143 PyrT30 A.Methanol         PreD1 M.Pkbr3 5.73e-04 0.003630 0.003430
-## 144 PyrT37 A.Methanol         PreD1 M.Pkbr3 6.05e-04 0.005320 0.005150
-## 145 PyrT27 A.Methanol          PuD0 M.Pkbr3 1.41e-04 0.000354 0.000534
-## 146 PyrT34 A.Methanol          PuD0 M.Pkbr3 2.43e-04 0.001180 0.001380
-## 147 PyrT35 A.Methanol          PuD0 M.Pkbr3 1.63e-04 0.001390 0.000939
-## 148 PyrT36 A.Methanol          PuD0 M.Pkbr3 1.39e-04 0.000917 0.001220
-## 149 PyrT44 A.Methanol          PuD0 M.Pkbr3 6.93e-05 0.000394 0.000717
-## 150 PyrT54      B.5mM         PreD1 M.Pkbr3 3.89e-04 0.000786 0.001430
-## 151 PyrT55      B.5mM         PreD1 M.Pkbr3 6.09e-04 0.002350 0.003510
-## 152 PyrT56      B.5mM         PreD1 M.Pkbr3 5.26e-04 0.001280 0.002580
-## 153 PyrT57      B.5mM         PreD1 M.Pkbr3 6.86e-04 0.001690 0.003140
-## 154 PyrT61      B.5mM         PreD1 M.Pkbr3 5.93e-04 0.002080 0.002640
-## 155 PyrT62      B.5mM         PreD1 M.Pkbr3 8.11e-04 0.005070 0.003120
-## 156 PyrT52      B.5mM          PuD0 M.Pkbr3 3.45e-04 0.007550 0.001940
-## 157 PyrT58      B.5mM          PuD0 M.Pkbr3 3.95e-04 0.000361 0.002640
-## 158 PyrT59      B.5mM          PuD0 M.Pkbr3 3.11e-04 0.001370 0.002130
-## 159 PyrT60      B.5mM          PuD0 M.Pkbr3 2.83e-04 0.001480 0.002030
-## 160 PyrT63      B.5mM          PuD0 M.Pkbr3 3.55e-04 0.001020 0.001820
-## 161 PyrT64      B.5mM          PuD0 M.Pkbr3 1.86e-04 0.000464 0.000970
-##     gene.normal
-## 139  0.12727273
-## 140  0.07179487
-## 141  0.13134328
-## 142  0.13266667
-## 143  0.16705539
-## 144  0.11747573
-## 145  0.26404494
-## 146  0.17608696
-## 147  0.17358892
-## 148  0.11393443
-## 149  0.09665272
-## 150  0.27202797
-## 151  0.17350427
-## 152  0.20387597
-## 153  0.21847134
-## 154  0.22462121
-## 155  0.25993590
-## 156  0.17783505
-## 157  0.14962121
-## 158  0.14600939
-## 159  0.13940887
-## 160  0.19505495
-## 161  0.19175258
+##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.2 gene.normal
+## 139 PyrT21 A.Methanol         PreD1 M.Pkbr3 3.08e-04 0.002420  0.12727273
+## 140 PyrT11 A.Methanol         PreD1 M.Pkbr3 3.36e-04 0.004680  0.07179487
+## 141 PyrT19 A.Methanol         PreD1 M.Pkbr3 3.52e-04 0.002680  0.13134328
+## 142 PyrT20 A.Methanol         PreD1 M.Pkbr3 5.97e-04 0.004500  0.13266667
+## 143 PyrT30 A.Methanol         PreD1 M.Pkbr3 5.73e-04 0.003430  0.16705539
+## 144 PyrT37 A.Methanol         PreD1 M.Pkbr3 6.05e-04 0.005150  0.11747573
+## 145 PyrT27 A.Methanol          PuD0 M.Pkbr3 1.41e-04 0.000534  0.26404494
+## 146 PyrT34 A.Methanol          PuD0 M.Pkbr3 2.43e-04 0.001380  0.17608696
+## 147 PyrT35 A.Methanol          PuD0 M.Pkbr3 1.63e-04 0.000939  0.17358892
+## 148 PyrT36 A.Methanol          PuD0 M.Pkbr3 1.39e-04 0.001220  0.11393443
+## 149 PyrT44 A.Methanol          PuD0 M.Pkbr3 6.93e-05 0.000717  0.09665272
+## 150 PyrT54      B.5mM         PreD1 M.Pkbr3 3.89e-04 0.001430  0.27202797
+## 151 PyrT55      B.5mM         PreD1 M.Pkbr3 6.09e-04 0.003510  0.17350427
+## 152 PyrT56      B.5mM         PreD1 M.Pkbr3 5.26e-04 0.002580  0.20387597
+## 153 PyrT57      B.5mM         PreD1 M.Pkbr3 6.86e-04 0.003140  0.21847134
+## 154 PyrT61      B.5mM         PreD1 M.Pkbr3 5.93e-04 0.002640  0.22462121
+## 155 PyrT62      B.5mM         PreD1 M.Pkbr3 8.11e-04 0.003120  0.25993590
+## 156 PyrT52      B.5mM          PuD0 M.Pkbr3 3.45e-04 0.001940  0.17783505
+## 157 PyrT58      B.5mM          PuD0 M.Pkbr3 3.95e-04 0.002640  0.14962121
+## 158 PyrT59      B.5mM          PuD0 M.Pkbr3 3.11e-04 0.002130  0.14600939
+## 159 PyrT60      B.5mM          PuD0 M.Pkbr3 2.83e-04 0.002030  0.13940887
+## 160 PyrT63      B.5mM          PuD0 M.Pkbr3 3.55e-04 0.001820  0.19505495
+## 161 PyrT64      B.5mM          PuD0 M.Pkbr3 1.86e-04 0.000970  0.19175258
 ```
 
 ```r
@@ -1288,30 +1167,30 @@ Pkbr3Z2box
 ```
 
 ```
-##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 254 PyrT21 A.Methanol         PreD1 N.Pkbr3.Z2 1.66e-04 0.001770 0.002420
-## 255 PyrT11 A.Methanol         PreD1 N.Pkbr3.Z2 1.66e-04 0.004210 0.004680
-## 256 PyrT19 A.Methanol         PreD1 N.Pkbr3.Z2 1.90e-04 0.002010 0.002680
-## 257 PyrT20 A.Methanol         PreD1 N.Pkbr3.Z2 2.77e-04 0.005270 0.004500
-## 258 PyrT30 A.Methanol         PreD1 N.Pkbr3.Z2 2.81e-04 0.003630 0.003430
-## 259 PyrT37 A.Methanol         PreD1 N.Pkbr3.Z2 3.83e-04 0.005320 0.005150
-## 260 PyrT27 A.Methanol          PuD0 N.Pkbr3.Z2 6.10e-05 0.000354 0.000534
-## 261 PyrT34 A.Methanol          PuD0 N.Pkbr3.Z2 1.09e-04 0.001180 0.001380
-## 262 PyrT35 A.Methanol          PuD0 N.Pkbr3.Z2 9.62e-05 0.001390 0.000939
-## 263 PyrT36 A.Methanol          PuD0 N.Pkbr3.Z2 7.10e-05 0.000917 0.001220
-## 264 PyrT44 A.Methanol          PuD0 N.Pkbr3.Z2 3.41e-05 0.000394 0.000717
-## 265 PyrT54      B.5mM         PreD1 N.Pkbr3.Z2 1.94e-04 0.000786 0.001430
-## 266 PyrT55      B.5mM         PreD1 N.Pkbr3.Z2 3.02e-04 0.002350 0.003510
-## 267 PyrT56      B.5mM         PreD1 N.Pkbr3.Z2 2.33e-04 0.001280 0.002580
-## 268 PyrT57      B.5mM         PreD1 N.Pkbr3.Z2 3.59e-04 0.001690 0.003140
-## 269 PyrT61      B.5mM         PreD1 N.Pkbr3.Z2 3.34e-04 0.002080 0.002640
-## 270 PyrT62      B.5mM         PreD1 N.Pkbr3.Z2 4.55e-04 0.005070 0.003120
-## 271 PyrT52      B.5mM          PuD0 N.Pkbr3.Z2 1.93e-04 0.007550 0.001940
-## 272 PyrT58      B.5mM          PuD0 N.Pkbr3.Z2 1.89e-04 0.000361 0.002640
-## 273 PyrT59      B.5mM          PuD0 N.Pkbr3.Z2 1.67e-04 0.001370 0.002130
-## 274 PyrT60      B.5mM          PuD0 N.Pkbr3.Z2 1.42e-04 0.001480 0.002030
-## 275 PyrT63      B.5mM          PuD0 N.Pkbr3.Z2 2.16e-04 0.001020 0.001820
-## 276 PyrT64      B.5mM          PuD0 N.Pkbr3.Z2 1.00e-04 0.000464 0.000970
+##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 254 PyrT21 A.Methanol         PreD1 N.Pkbr3.Z2 1.66e-04 0.002420
+## 255 PyrT11 A.Methanol         PreD1 N.Pkbr3.Z2 1.66e-04 0.004680
+## 256 PyrT19 A.Methanol         PreD1 N.Pkbr3.Z2 1.90e-04 0.002680
+## 257 PyrT20 A.Methanol         PreD1 N.Pkbr3.Z2 2.77e-04 0.004500
+## 258 PyrT30 A.Methanol         PreD1 N.Pkbr3.Z2 2.81e-04 0.003430
+## 259 PyrT37 A.Methanol         PreD1 N.Pkbr3.Z2 3.83e-04 0.005150
+## 260 PyrT27 A.Methanol          PuD0 N.Pkbr3.Z2 6.10e-05 0.000534
+## 261 PyrT34 A.Methanol          PuD0 N.Pkbr3.Z2 1.09e-04 0.001380
+## 262 PyrT35 A.Methanol          PuD0 N.Pkbr3.Z2 9.62e-05 0.000939
+## 263 PyrT36 A.Methanol          PuD0 N.Pkbr3.Z2 7.10e-05 0.001220
+## 264 PyrT44 A.Methanol          PuD0 N.Pkbr3.Z2 3.41e-05 0.000717
+## 265 PyrT54      B.5mM         PreD1 N.Pkbr3.Z2 1.94e-04 0.001430
+## 266 PyrT55      B.5mM         PreD1 N.Pkbr3.Z2 3.02e-04 0.003510
+## 267 PyrT56      B.5mM         PreD1 N.Pkbr3.Z2 2.33e-04 0.002580
+## 268 PyrT57      B.5mM         PreD1 N.Pkbr3.Z2 3.59e-04 0.003140
+## 269 PyrT61      B.5mM         PreD1 N.Pkbr3.Z2 3.34e-04 0.002640
+## 270 PyrT62      B.5mM         PreD1 N.Pkbr3.Z2 4.55e-04 0.003120
+## 271 PyrT52      B.5mM          PuD0 N.Pkbr3.Z2 1.93e-04 0.001940
+## 272 PyrT58      B.5mM          PuD0 N.Pkbr3.Z2 1.89e-04 0.002640
+## 273 PyrT59      B.5mM          PuD0 N.Pkbr3.Z2 1.67e-04 0.002130
+## 274 PyrT60      B.5mM          PuD0 N.Pkbr3.Z2 1.42e-04 0.002030
+## 275 PyrT63      B.5mM          PuD0 N.Pkbr3.Z2 2.16e-04 0.001820
+## 276 PyrT64      B.5mM          PuD0 N.Pkbr3.Z2 1.00e-04 0.000970
 ##     gene.normal
 ## 254  0.06859504
 ## 255  0.03547009
@@ -1373,54 +1252,30 @@ Pkbr2box
 ```
 
 ```
-##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.1   rp49.2
-## 116 PyrT21 A.Methanol         PreD1 J.Pkbr2 2.25e-05 0.001770 0.002420
-## 117 PyrT11 A.Methanol         PreD1 J.Pkbr2 2.51e-05 0.004210 0.004680
-## 118 PyrT19 A.Methanol         PreD1 J.Pkbr2 9.13e-06 0.002010 0.002680
-## 119 PyrT20 A.Methanol         PreD1 J.Pkbr2 3.35e-05 0.005270 0.004500
-## 120 PyrT30 A.Methanol         PreD1 J.Pkbr2 2.64e-05 0.003630 0.003430
-## 121 PyrT37 A.Methanol         PreD1 J.Pkbr2 4.41e-05 0.005320 0.005150
-## 122 PyrT27 A.Methanol          PuD0 J.Pkbr2 1.19e-05 0.000354 0.000534
-## 123 PyrT34 A.Methanol          PuD0 J.Pkbr2 1.80e-05 0.001180 0.001380
-## 124 PyrT35 A.Methanol          PuD0 J.Pkbr2 2.13e-05 0.001390 0.000939
-## 125 PyrT36 A.Methanol          PuD0 J.Pkbr2 1.44e-05 0.000917 0.001220
-## 126 PyrT44 A.Methanol          PuD0 J.Pkbr2 7.42e-06 0.000394 0.000717
-## 127 PyrT54      B.5mM         PreD1 J.Pkbr2 1.11e-05 0.000786 0.001430
-## 128 PyrT55      B.5mM         PreD1 J.Pkbr2 1.44e-05 0.002350 0.003510
-## 129 PyrT56      B.5mM         PreD1 J.Pkbr2 1.76e-05 0.001280 0.002580
-## 130 PyrT57      B.5mM         PreD1 J.Pkbr2 2.27e-05 0.001690 0.003140
-## 131 PyrT61      B.5mM         PreD1 J.Pkbr2 2.01e-05 0.002080 0.002640
-## 132 PyrT62      B.5mM         PreD1 J.Pkbr2 3.01e-05 0.005070 0.003120
-## 133 PyrT52      B.5mM          PuD0 J.Pkbr2 1.71e-05 0.007550 0.001940
-## 134 PyrT58      B.5mM          PuD0 J.Pkbr2 2.14e-05 0.000361 0.002640
-## 135 PyrT59      B.5mM          PuD0 J.Pkbr2 1.94e-05 0.001370 0.002130
-## 136 PyrT60      B.5mM          PuD0 J.Pkbr2 1.62e-05 0.001480 0.002030
-## 137 PyrT63      B.5mM          PuD0 J.Pkbr2 1.99e-05 0.001020 0.001820
-## 138 PyrT64      B.5mM          PuD0 J.Pkbr2 1.37e-05 0.000464 0.000970
-##     gene.normal
-## 116 0.009297521
-## 117 0.005363248
-## 118 0.003406716
-## 119 0.007444444
-## 120 0.007696793
-## 121 0.008563107
-## 122 0.022284644
-## 123 0.013043478
-## 124 0.022683706
-## 125 0.011803279
-## 126 0.010348675
-## 127 0.007762238
-## 128 0.004102564
-## 129 0.006821705
-## 130 0.007229299
-## 131 0.007613636
-## 132 0.009647436
-## 133 0.008814433
-## 134 0.008106061
-## 135 0.009107981
-## 136 0.007980296
-## 137 0.010934066
-## 138 0.014123711
+##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.2 gene.normal
+## 116 PyrT21 A.Methanol         PreD1 J.Pkbr2 2.25e-05 0.002420 0.009297521
+## 117 PyrT11 A.Methanol         PreD1 J.Pkbr2 2.51e-05 0.004680 0.005363248
+## 118 PyrT19 A.Methanol         PreD1 J.Pkbr2 9.13e-06 0.002680 0.003406716
+## 119 PyrT20 A.Methanol         PreD1 J.Pkbr2 3.35e-05 0.004500 0.007444444
+## 120 PyrT30 A.Methanol         PreD1 J.Pkbr2 2.64e-05 0.003430 0.007696793
+## 121 PyrT37 A.Methanol         PreD1 J.Pkbr2 4.41e-05 0.005150 0.008563107
+## 122 PyrT27 A.Methanol          PuD0 J.Pkbr2 1.19e-05 0.000534 0.022284644
+## 123 PyrT34 A.Methanol          PuD0 J.Pkbr2 1.80e-05 0.001380 0.013043478
+## 124 PyrT35 A.Methanol          PuD0 J.Pkbr2 2.13e-05 0.000939 0.022683706
+## 125 PyrT36 A.Methanol          PuD0 J.Pkbr2 1.44e-05 0.001220 0.011803279
+## 126 PyrT44 A.Methanol          PuD0 J.Pkbr2 7.42e-06 0.000717 0.010348675
+## 127 PyrT54      B.5mM         PreD1 J.Pkbr2 1.11e-05 0.001430 0.007762238
+## 128 PyrT55      B.5mM         PreD1 J.Pkbr2 1.44e-05 0.003510 0.004102564
+## 129 PyrT56      B.5mM         PreD1 J.Pkbr2 1.76e-05 0.002580 0.006821705
+## 130 PyrT57      B.5mM         PreD1 J.Pkbr2 2.27e-05 0.003140 0.007229299
+## 131 PyrT61      B.5mM         PreD1 J.Pkbr2 2.01e-05 0.002640 0.007613636
+## 132 PyrT62      B.5mM         PreD1 J.Pkbr2 3.01e-05 0.003120 0.009647436
+## 133 PyrT52      B.5mM          PuD0 J.Pkbr2 1.71e-05 0.001940 0.008814433
+## 134 PyrT58      B.5mM          PuD0 J.Pkbr2 2.14e-05 0.002640 0.008106061
+## 135 PyrT59      B.5mM          PuD0 J.Pkbr2 1.94e-05 0.002130 0.009107981
+## 136 PyrT60      B.5mM          PuD0 J.Pkbr2 1.62e-05 0.002030 0.007980296
+## 137 PyrT63      B.5mM          PuD0 J.Pkbr2 1.99e-05 0.001820 0.010934066
+## 138 PyrT64      B.5mM          PuD0 J.Pkbr2 1.37e-05 0.000970 0.014123711
 ```
 
 ```r
@@ -1457,30 +1312,30 @@ Pkbr2Z2box
 ```
 
 ```
-##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 208 PyrT21 A.Methanol         PreD1 K.Pkbr2.Z2 4.69e-05 0.001770 0.002420
-## 209 PyrT11 A.Methanol         PreD1 K.Pkbr2.Z2 3.40e-05 0.004210 0.004680
-## 210 PyrT19 A.Methanol         PreD1 K.Pkbr2.Z2 1.49e-05 0.002010 0.002680
-## 211 PyrT20 A.Methanol         PreD1 K.Pkbr2.Z2 4.38e-05 0.005270 0.004500
-## 212 PyrT30 A.Methanol         PreD1 K.Pkbr2.Z2 3.48e-05 0.003630 0.003430
-## 213 PyrT37 A.Methanol         PreD1 K.Pkbr2.Z2 4.94e-05 0.005320 0.005150
-## 214 PyrT27 A.Methanol          PuD0 K.Pkbr2.Z2 2.09e-05 0.000354 0.000534
-## 215 PyrT34 A.Methanol          PuD0 K.Pkbr2.Z2 2.12e-05 0.001180 0.001380
-## 216 PyrT35 A.Methanol          PuD0 K.Pkbr2.Z2 2.48e-05 0.001390 0.000939
-## 217 PyrT36 A.Methanol          PuD0 K.Pkbr2.Z2 2.09e-05 0.000917 0.001220
-## 218 PyrT44 A.Methanol          PuD0 K.Pkbr2.Z2 1.13e-05 0.000394 0.000717
-## 219 PyrT54      B.5mM         PreD1 K.Pkbr2.Z2 1.80e-05 0.000786 0.001430
-## 220 PyrT55      B.5mM         PreD1 K.Pkbr2.Z2 1.73e-05 0.002350 0.003510
-## 221 PyrT56      B.5mM         PreD1 K.Pkbr2.Z2 1.75e-05 0.001280 0.002580
-## 222 PyrT57      B.5mM         PreD1 K.Pkbr2.Z2 2.88e-05 0.001690 0.003140
-## 223 PyrT61      B.5mM         PreD1 K.Pkbr2.Z2 2.60e-05 0.002080 0.002640
-## 224 PyrT62      B.5mM         PreD1 K.Pkbr2.Z2 3.61e-05 0.005070 0.003120
-## 225 PyrT52      B.5mM          PuD0 K.Pkbr2.Z2 2.04e-05 0.007550 0.001940
-## 226 PyrT58      B.5mM          PuD0 K.Pkbr2.Z2 3.13e-05 0.000361 0.002640
-## 227 PyrT59      B.5mM          PuD0 K.Pkbr2.Z2 2.27e-05 0.001370 0.002130
-## 228 PyrT60      B.5mM          PuD0 K.Pkbr2.Z2 1.87e-05 0.001480 0.002030
-## 229 PyrT63      B.5mM          PuD0 K.Pkbr2.Z2 2.32e-05 0.001020 0.001820
-## 230 PyrT64      B.5mM          PuD0 K.Pkbr2.Z2 1.44e-05 0.000464 0.000970
+##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 208 PyrT21 A.Methanol         PreD1 K.Pkbr2.Z2 4.69e-05 0.002420
+## 209 PyrT11 A.Methanol         PreD1 K.Pkbr2.Z2 3.40e-05 0.004680
+## 210 PyrT19 A.Methanol         PreD1 K.Pkbr2.Z2 1.49e-05 0.002680
+## 211 PyrT20 A.Methanol         PreD1 K.Pkbr2.Z2 4.38e-05 0.004500
+## 212 PyrT30 A.Methanol         PreD1 K.Pkbr2.Z2 3.48e-05 0.003430
+## 213 PyrT37 A.Methanol         PreD1 K.Pkbr2.Z2 4.94e-05 0.005150
+## 214 PyrT27 A.Methanol          PuD0 K.Pkbr2.Z2 2.09e-05 0.000534
+## 215 PyrT34 A.Methanol          PuD0 K.Pkbr2.Z2 2.12e-05 0.001380
+## 216 PyrT35 A.Methanol          PuD0 K.Pkbr2.Z2 2.48e-05 0.000939
+## 217 PyrT36 A.Methanol          PuD0 K.Pkbr2.Z2 2.09e-05 0.001220
+## 218 PyrT44 A.Methanol          PuD0 K.Pkbr2.Z2 1.13e-05 0.000717
+## 219 PyrT54      B.5mM         PreD1 K.Pkbr2.Z2 1.80e-05 0.001430
+## 220 PyrT55      B.5mM         PreD1 K.Pkbr2.Z2 1.73e-05 0.003510
+## 221 PyrT56      B.5mM         PreD1 K.Pkbr2.Z2 1.75e-05 0.002580
+## 222 PyrT57      B.5mM         PreD1 K.Pkbr2.Z2 2.88e-05 0.003140
+## 223 PyrT61      B.5mM         PreD1 K.Pkbr2.Z2 2.60e-05 0.002640
+## 224 PyrT62      B.5mM         PreD1 K.Pkbr2.Z2 3.61e-05 0.003120
+## 225 PyrT52      B.5mM          PuD0 K.Pkbr2.Z2 2.04e-05 0.001940
+## 226 PyrT58      B.5mM          PuD0 K.Pkbr2.Z2 3.13e-05 0.002640
+## 227 PyrT59      B.5mM          PuD0 K.Pkbr2.Z2 2.27e-05 0.002130
+## 228 PyrT60      B.5mM          PuD0 K.Pkbr2.Z2 1.87e-05 0.002030
+## 229 PyrT63      B.5mM          PuD0 K.Pkbr2.Z2 2.32e-05 0.001820
+## 230 PyrT64      B.5mM          PuD0 K.Pkbr2.Z2 1.44e-05 0.000970
 ##     gene.normal
 ## 208 0.019380165
 ## 209 0.007264957
@@ -1542,30 +1397,30 @@ Pkbr2Z4box
 ```
 
 ```
-##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 231 PyrT21 A.Methanol         PreD1 L.Pkbr2.Z4 3.59e-05 0.001770 0.002420
-## 232 PyrT11 A.Methanol         PreD1 L.Pkbr2.Z4 3.09e-05 0.004210 0.004680
-## 233 PyrT19 A.Methanol         PreD1 L.Pkbr2.Z4 1.73e-05 0.002010 0.002680
-## 234 PyrT20 A.Methanol         PreD1 L.Pkbr2.Z4 5.00e-05 0.005270 0.004500
-## 235 PyrT30 A.Methanol         PreD1 L.Pkbr2.Z4 4.83e-05 0.003630 0.003430
-## 236 PyrT37 A.Methanol         PreD1 L.Pkbr2.Z4 5.40e-05 0.005320 0.005150
-## 237 PyrT27 A.Methanol          PuD0 L.Pkbr2.Z4 2.61e-05 0.000354 0.000534
-## 238 PyrT34 A.Methanol          PuD0 L.Pkbr2.Z4 3.05e-05 0.001180 0.001380
-## 239 PyrT35 A.Methanol          PuD0 L.Pkbr2.Z4 3.32e-05 0.001390 0.000939
-## 240 PyrT36 A.Methanol          PuD0 L.Pkbr2.Z4 3.03e-05 0.000917 0.001220
-## 241 PyrT44 A.Methanol          PuD0 L.Pkbr2.Z4 1.58e-05 0.000394 0.000717
-## 242 PyrT54      B.5mM         PreD1 L.Pkbr2.Z4 1.67e-05 0.000786 0.001430
-## 243 PyrT55      B.5mM         PreD1 L.Pkbr2.Z4 2.28e-05 0.002350 0.003510
-## 244 PyrT56      B.5mM         PreD1 L.Pkbr2.Z4 2.11e-05 0.001280 0.002580
-## 245 PyrT57      B.5mM         PreD1 L.Pkbr2.Z4 3.79e-05 0.001690 0.003140
-## 246 PyrT61      B.5mM         PreD1 L.Pkbr2.Z4 2.88e-05 0.002080 0.002640
-## 247 PyrT62      B.5mM         PreD1 L.Pkbr2.Z4 5.37e-05 0.005070 0.003120
-## 248 PyrT52      B.5mM          PuD0 L.Pkbr2.Z4 2.96e-05 0.007550 0.001940
-## 249 PyrT58      B.5mM          PuD0 L.Pkbr2.Z4 3.85e-05 0.000361 0.002640
-## 250 PyrT59      B.5mM          PuD0 L.Pkbr2.Z4 3.32e-05 0.001370 0.002130
-## 251 PyrT60      B.5mM          PuD0 L.Pkbr2.Z4 2.57e-05 0.001480 0.002030
-## 252 PyrT63      B.5mM          PuD0 L.Pkbr2.Z4 3.22e-05 0.001020 0.001820
-## 253 PyrT64      B.5mM          PuD0 L.Pkbr2.Z4 1.88e-05 0.000464 0.000970
+##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 231 PyrT21 A.Methanol         PreD1 L.Pkbr2.Z4 3.59e-05 0.002420
+## 232 PyrT11 A.Methanol         PreD1 L.Pkbr2.Z4 3.09e-05 0.004680
+## 233 PyrT19 A.Methanol         PreD1 L.Pkbr2.Z4 1.73e-05 0.002680
+## 234 PyrT20 A.Methanol         PreD1 L.Pkbr2.Z4 5.00e-05 0.004500
+## 235 PyrT30 A.Methanol         PreD1 L.Pkbr2.Z4 4.83e-05 0.003430
+## 236 PyrT37 A.Methanol         PreD1 L.Pkbr2.Z4 5.40e-05 0.005150
+## 237 PyrT27 A.Methanol          PuD0 L.Pkbr2.Z4 2.61e-05 0.000534
+## 238 PyrT34 A.Methanol          PuD0 L.Pkbr2.Z4 3.05e-05 0.001380
+## 239 PyrT35 A.Methanol          PuD0 L.Pkbr2.Z4 3.32e-05 0.000939
+## 240 PyrT36 A.Methanol          PuD0 L.Pkbr2.Z4 3.03e-05 0.001220
+## 241 PyrT44 A.Methanol          PuD0 L.Pkbr2.Z4 1.58e-05 0.000717
+## 242 PyrT54      B.5mM         PreD1 L.Pkbr2.Z4 1.67e-05 0.001430
+## 243 PyrT55      B.5mM         PreD1 L.Pkbr2.Z4 2.28e-05 0.003510
+## 244 PyrT56      B.5mM         PreD1 L.Pkbr2.Z4 2.11e-05 0.002580
+## 245 PyrT57      B.5mM         PreD1 L.Pkbr2.Z4 3.79e-05 0.003140
+## 246 PyrT61      B.5mM         PreD1 L.Pkbr2.Z4 2.88e-05 0.002640
+## 247 PyrT62      B.5mM         PreD1 L.Pkbr2.Z4 5.37e-05 0.003120
+## 248 PyrT52      B.5mM          PuD0 L.Pkbr2.Z4 2.96e-05 0.001940
+## 249 PyrT58      B.5mM          PuD0 L.Pkbr2.Z4 3.85e-05 0.002640
+## 250 PyrT59      B.5mM          PuD0 L.Pkbr2.Z4 3.32e-05 0.002130
+## 251 PyrT60      B.5mM          PuD0 L.Pkbr2.Z4 2.57e-05 0.002030
+## 252 PyrT63      B.5mM          PuD0 L.Pkbr2.Z4 3.22e-05 0.001820
+## 253 PyrT64      B.5mM          PuD0 L.Pkbr2.Z4 1.88e-05 0.000970
 ##     gene.normal
 ## 231 0.014834711
 ## 232 0.006602564
@@ -1937,7 +1792,7 @@ t.test(gene.normal~Treatment,data=pupatestPkbr3z2)
 ```r
 FigureSTai<-subset(dataA3,Gene=="SDM.Tai.IN"|Gene=="SDM.Tai.DEL")
 
-pFigSTai<-ggplot(FigureSTai, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFigSTai<-ggplot(FigureSTai, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
   geom_point(aes(linetype=Sex),size=2)+
   geom_line(aes(linetype=Sex),size=0.5)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
@@ -1953,7 +1808,7 @@ pFigSTai+facet_grid(Gene~.,scales="free")
 ```r
 FigureSTai5<-subset(dataA3,Gene=="SDM.Tai5A"|Gene=="SDM.Tai5B")
 
-pFigSTai5<-ggplot(FigureSTai5, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFigSTai5<-ggplot(FigureSTai5, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
   geom_point(aes(linetype=Sex),size=2)+
   geom_line(aes(linetype=Sex),size=0.5)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+

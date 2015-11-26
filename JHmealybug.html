@@ -80,15 +80,14 @@ img {
 </div>
 <div id="loading-datasets" class="section level1">
 <h1>Loading datasets</h1>
-<pre class="r"><code>setwd(&quot;/Users/ivea/Dropbox/_Github_reps/mealybugJH/&quot;)
-dataA&lt;-read.csv(file=&quot;expressionprofile.csv&quot;,header =TRUE)
+<pre class="r"><code>dataA&lt;-read.csv(file=&quot;expressionprofile.csv&quot;,header =TRUE)
 dataB&lt;-read.csv(file=&quot;Pyri5mM.csv&quot;,header = TRUE)
 
 #reshaping data
 dataA2&lt;-gather(dataA,Gene,SDM,7:24)
 
-#summarizing by gene, day after hatching and sex
-dataA3&lt;-ddply(dataA2,~Day.after.hatching +Sex+Gene,summarise,meanrp49=mean(SDM.rp49.2),meanSDM=mean(SDM))
+#summarizing by gene, day after oviposition and sex
+dataA3&lt;-ddply(dataA2,~Day.after.oviposition +Sex+Gene,summarise,meanrp49=mean(SDM.rp49.2),meanSDM=mean(SDM))
 
 #normalize dataB with housekeeping gene
 dataB$gene.normal&lt;-dataB$SDM.gene/dataB$rp49.2
@@ -118,7 +117,7 @@ dataBs&lt;-summarySE(dataB, measurevar=&quot;gene.normal&quot;, groupvars=c(&quo
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>Figure2&lt;-subset(dataA3,Gene==&quot;SDM.JHAMT&quot;|Gene==&quot;SDM.Met&quot;|Gene==&quot;SDM.Tai&quot;|Gene==&quot;SDM.Pkkr.h1_26&quot;)
 
-pFig1&lt;-ggplot(Figure2, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFig1&lt;-ggplot(Figure2, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
   geom_point(aes(linetype=Sex),size=2)+
   geom_line(aes(linetype=Sex),size=0.5)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = &quot;black&quot;))+
@@ -188,54 +187,30 @@ t.test(gene.normal~Treatment,data=pupatestMet)</code></pre>
 <h2>Figure 3-D to F: Tai core, Tai-IN and Tai-DEL</h2>
 <pre class="r"><code>PkTaibox&lt;-subset(dataB, Gene==&quot;O.Tai&quot;)
 PkTaibox</code></pre>
-<pre><code>##     Sample  Treatment Stage.treated  Gene SDM.gene   rp49.1   rp49.2
-## 323 PyrT21 A.Methanol         PreD1 O.Tai 0.000438 0.001770 0.002420
-## 324 PyrT11 A.Methanol         PreD1 O.Tai 0.000491 0.004210 0.004680
-## 325 PyrT19 A.Methanol         PreD1 O.Tai 0.000648 0.002010 0.002680
-## 326 PyrT20 A.Methanol         PreD1 O.Tai 0.000817 0.005270 0.004500
-## 327 PyrT30 A.Methanol         PreD1 O.Tai 0.000700 0.003630 0.003430
-## 328 PyrT37 A.Methanol         PreD1 O.Tai 0.000830 0.005320 0.005150
-## 329 PyrT27 A.Methanol          PuD0 O.Tai 0.001010 0.000354 0.000534
-## 330 PyrT34 A.Methanol          PuD0 O.Tai 0.000324 0.001180 0.001380
-## 331 PyrT35 A.Methanol          PuD0 O.Tai 0.001050 0.001390 0.000939
-## 332 PyrT36 A.Methanol          PuD0 O.Tai 0.001040 0.000917 0.001220
-## 333 PyrT44 A.Methanol          PuD0 O.Tai 0.000244 0.000394 0.000717
-## 334 PyrT54      B.5mM         PreD1 O.Tai 0.000324 0.000786 0.001430
-## 335 PyrT55      B.5mM         PreD1 O.Tai 0.000629 0.002350 0.003510
-## 336 PyrT56      B.5mM         PreD1 O.Tai 0.000431 0.001280 0.002580
-## 337 PyrT57      B.5mM         PreD1 O.Tai 0.000805 0.001690 0.003140
-## 338 PyrT61      B.5mM         PreD1 O.Tai 0.000408 0.002080 0.002640
-## 339 PyrT62      B.5mM         PreD1 O.Tai 0.001080 0.005070 0.003120
-## 340 PyrT52      B.5mM          PuD0 O.Tai 0.000491 0.007550 0.001940
-## 341 PyrT58      B.5mM          PuD0 O.Tai 0.000487 0.000361 0.002640
-## 342 PyrT59      B.5mM          PuD0 O.Tai 0.000361 0.001370 0.002130
-## 343 PyrT60      B.5mM          PuD0 O.Tai 0.000293 0.001480 0.002030
-## 344 PyrT63      B.5mM          PuD0 O.Tai 0.000518 0.001020 0.001820
-## 345 PyrT64      B.5mM          PuD0 O.Tai 0.000204 0.000464 0.000970
-##     gene.normal
-## 323   0.1809917
-## 324   0.1049145
-## 325   0.2417910
-## 326   0.1815556
-## 327   0.2040816
-## 328   0.1611650
-## 329   1.8913858
-## 330   0.2347826
-## 331   1.1182109
-## 332   0.8524590
-## 333   0.3403068
-## 334   0.2265734
-## 335   0.1792023
-## 336   0.1670543
-## 337   0.2563694
-## 338   0.1545455
-## 339   0.3461538
-## 340   0.2530928
-## 341   0.1844697
-## 342   0.1694836
-## 343   0.1443350
-## 344   0.2846154
-## 345   0.2103093</code></pre>
+<pre><code>##     Sample  Treatment Stage.treated  Gene SDM.gene   rp49.2 gene.normal
+## 323 PyrT21 A.Methanol         PreD1 O.Tai 0.000438 0.002420   0.1809917
+## 324 PyrT11 A.Methanol         PreD1 O.Tai 0.000491 0.004680   0.1049145
+## 325 PyrT19 A.Methanol         PreD1 O.Tai 0.000648 0.002680   0.2417910
+## 326 PyrT20 A.Methanol         PreD1 O.Tai 0.000817 0.004500   0.1815556
+## 327 PyrT30 A.Methanol         PreD1 O.Tai 0.000700 0.003430   0.2040816
+## 328 PyrT37 A.Methanol         PreD1 O.Tai 0.000830 0.005150   0.1611650
+## 329 PyrT27 A.Methanol          PuD0 O.Tai 0.001010 0.000534   1.8913858
+## 330 PyrT34 A.Methanol          PuD0 O.Tai 0.000324 0.001380   0.2347826
+## 331 PyrT35 A.Methanol          PuD0 O.Tai 0.001050 0.000939   1.1182109
+## 332 PyrT36 A.Methanol          PuD0 O.Tai 0.001040 0.001220   0.8524590
+## 333 PyrT44 A.Methanol          PuD0 O.Tai 0.000244 0.000717   0.3403068
+## 334 PyrT54      B.5mM         PreD1 O.Tai 0.000324 0.001430   0.2265734
+## 335 PyrT55      B.5mM         PreD1 O.Tai 0.000629 0.003510   0.1792023
+## 336 PyrT56      B.5mM         PreD1 O.Tai 0.000431 0.002580   0.1670543
+## 337 PyrT57      B.5mM         PreD1 O.Tai 0.000805 0.003140   0.2563694
+## 338 PyrT61      B.5mM         PreD1 O.Tai 0.000408 0.002640   0.1545455
+## 339 PyrT62      B.5mM         PreD1 O.Tai 0.001080 0.003120   0.3461538
+## 340 PyrT52      B.5mM          PuD0 O.Tai 0.000491 0.001940   0.2530928
+## 341 PyrT58      B.5mM          PuD0 O.Tai 0.000487 0.002640   0.1844697
+## 342 PyrT59      B.5mM          PuD0 O.Tai 0.000361 0.002130   0.1694836
+## 343 PyrT60      B.5mM          PuD0 O.Tai 0.000293 0.002030   0.1443350
+## 344 PyrT63      B.5mM          PuD0 O.Tai 0.000518 0.001820   0.2846154
+## 345 PyrT64      B.5mM          PuD0 O.Tai 0.000204 0.000970   0.2103093</code></pre>
 <pre class="r"><code>PkTaibox&lt;-select(PkTaibox, gene.normal,Stage.treated, Treatment)
 Taibox&lt;-ggplot(data = PkTaibox, aes(x = Stage.treated, y = gene.normal)) + 
   geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
@@ -254,54 +229,30 @@ dev.off()</code></pre>
 ##                 2</code></pre>
 <pre class="r"><code>PkTaiINbox&lt;-subset(dataB, Gene==&quot;P.Tai.IN&quot;)
 PkTaiINbox</code></pre>
-<pre><code>##     Sample  Treatment Stage.treated     Gene SDM.gene   rp49.1   rp49.2
-## 277 PyrT21 A.Methanol         PreD1 P.Tai.IN 0.000302 0.001770 0.002420
-## 278 PyrT11 A.Methanol         PreD1 P.Tai.IN 0.000335 0.004210 0.004680
-## 279 PyrT19 A.Methanol         PreD1 P.Tai.IN 0.000328 0.002010 0.002680
-## 280 PyrT20 A.Methanol         PreD1 P.Tai.IN 0.000450 0.005270 0.004500
-## 281 PyrT30 A.Methanol         PreD1 P.Tai.IN 0.000471 0.003630 0.003430
-## 282 PyrT37 A.Methanol         PreD1 P.Tai.IN 0.000591 0.005320 0.005150
-## 283 PyrT27 A.Methanol          PuD0 P.Tai.IN 0.000736 0.000354 0.000534
-## 284 PyrT34 A.Methanol          PuD0 P.Tai.IN 0.000720 0.001180 0.001380
-## 285 PyrT35 A.Methanol          PuD0 P.Tai.IN 0.001160 0.001390 0.000939
-## 286 PyrT36 A.Methanol          PuD0 P.Tai.IN 0.001000 0.000917 0.001220
-## 287 PyrT44 A.Methanol          PuD0 P.Tai.IN 0.000213 0.000394 0.000717
-## 288 PyrT54      B.5mM         PreD1 P.Tai.IN 0.000201 0.000786 0.001430
-## 289 PyrT55      B.5mM         PreD1 P.Tai.IN 0.000440 0.002350 0.003510
-## 290 PyrT56      B.5mM         PreD1 P.Tai.IN 0.000325 0.001280 0.002580
-## 291 PyrT57      B.5mM         PreD1 P.Tai.IN 0.000794 0.001690 0.003140
-## 292 PyrT61      B.5mM         PreD1 P.Tai.IN 0.000528 0.002080 0.002640
-## 293 PyrT62      B.5mM         PreD1 P.Tai.IN 0.000657 0.005070 0.003120
-## 294 PyrT52      B.5mM          PuD0 P.Tai.IN 0.000356 0.007550 0.001940
-## 295 PyrT58      B.5mM          PuD0 P.Tai.IN 0.000440 0.000361 0.002640
-## 296 PyrT59      B.5mM          PuD0 P.Tai.IN 0.000293 0.001370 0.002130
-## 297 PyrT60      B.5mM          PuD0 P.Tai.IN 0.000182 0.001480 0.002030
-## 298 PyrT63      B.5mM          PuD0 P.Tai.IN 0.000569 0.001020 0.001820
-## 299 PyrT64      B.5mM          PuD0 P.Tai.IN 0.000220 0.000464 0.000970
-##     gene.normal
-## 277  0.12479339
-## 278  0.07158120
-## 279  0.12238806
-## 280  0.10000000
-## 281  0.13731778
-## 282  0.11475728
-## 283  1.37827715
-## 284  0.52173913
-## 285  1.23535676
-## 286  0.81967213
-## 287  0.29707113
-## 288  0.14055944
-## 289  0.12535613
-## 290  0.12596899
-## 291  0.25286624
-## 292  0.20000000
-## 293  0.21057692
-## 294  0.18350515
-## 295  0.16666667
-## 296  0.13755869
-## 297  0.08965517
-## 298  0.31263736
-## 299  0.22680412</code></pre>
+<pre><code>##     Sample  Treatment Stage.treated     Gene SDM.gene   rp49.2 gene.normal
+## 277 PyrT21 A.Methanol         PreD1 P.Tai.IN 0.000302 0.002420  0.12479339
+## 278 PyrT11 A.Methanol         PreD1 P.Tai.IN 0.000335 0.004680  0.07158120
+## 279 PyrT19 A.Methanol         PreD1 P.Tai.IN 0.000328 0.002680  0.12238806
+## 280 PyrT20 A.Methanol         PreD1 P.Tai.IN 0.000450 0.004500  0.10000000
+## 281 PyrT30 A.Methanol         PreD1 P.Tai.IN 0.000471 0.003430  0.13731778
+## 282 PyrT37 A.Methanol         PreD1 P.Tai.IN 0.000591 0.005150  0.11475728
+## 283 PyrT27 A.Methanol          PuD0 P.Tai.IN 0.000736 0.000534  1.37827715
+## 284 PyrT34 A.Methanol          PuD0 P.Tai.IN 0.000720 0.001380  0.52173913
+## 285 PyrT35 A.Methanol          PuD0 P.Tai.IN 0.001160 0.000939  1.23535676
+## 286 PyrT36 A.Methanol          PuD0 P.Tai.IN 0.001000 0.001220  0.81967213
+## 287 PyrT44 A.Methanol          PuD0 P.Tai.IN 0.000213 0.000717  0.29707113
+## 288 PyrT54      B.5mM         PreD1 P.Tai.IN 0.000201 0.001430  0.14055944
+## 289 PyrT55      B.5mM         PreD1 P.Tai.IN 0.000440 0.003510  0.12535613
+## 290 PyrT56      B.5mM         PreD1 P.Tai.IN 0.000325 0.002580  0.12596899
+## 291 PyrT57      B.5mM         PreD1 P.Tai.IN 0.000794 0.003140  0.25286624
+## 292 PyrT61      B.5mM         PreD1 P.Tai.IN 0.000528 0.002640  0.20000000
+## 293 PyrT62      B.5mM         PreD1 P.Tai.IN 0.000657 0.003120  0.21057692
+## 294 PyrT52      B.5mM          PuD0 P.Tai.IN 0.000356 0.001940  0.18350515
+## 295 PyrT58      B.5mM          PuD0 P.Tai.IN 0.000440 0.002640  0.16666667
+## 296 PyrT59      B.5mM          PuD0 P.Tai.IN 0.000293 0.002130  0.13755869
+## 297 PyrT60      B.5mM          PuD0 P.Tai.IN 0.000182 0.002030  0.08965517
+## 298 PyrT63      B.5mM          PuD0 P.Tai.IN 0.000569 0.001820  0.31263736
+## 299 PyrT64      B.5mM          PuD0 P.Tai.IN 0.000220 0.000970  0.22680412</code></pre>
 <pre class="r"><code>PkTaiINbox&lt;-select(PkTaiINbox, gene.normal,Stage.treated, Treatment)
 TaiINbox&lt;-ggplot(data = PkTaiINbox, aes(x = Stage.treated, y = gene.normal)) + 
   geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
@@ -321,30 +272,30 @@ dev.off()</code></pre>
 <pre class="r"><code>#boxplot
 PkTaiDELbox&lt;-subset(dataB, Gene==&quot;Q.Tai-DEL&quot;)
 PkTaiDELbox</code></pre>
-<pre><code>##     Sample  Treatment Stage.treated      Gene SDM.gene   rp49.1   rp49.2
-## 300 PyrT21 A.Methanol         PreD1 Q.Tai-DEL 2.33e-05 0.001770 0.002420
-## 301 PyrT11 A.Methanol         PreD1 Q.Tai-DEL 2.18e-05 0.004210 0.004680
-## 302 PyrT19 A.Methanol         PreD1 Q.Tai-DEL 3.30e-05 0.002010 0.002680
-## 303 PyrT20 A.Methanol         PreD1 Q.Tai-DEL 5.12e-05 0.005270 0.004500
-## 304 PyrT30 A.Methanol         PreD1 Q.Tai-DEL 6.59e-05 0.003630 0.003430
-## 305 PyrT37 A.Methanol         PreD1 Q.Tai-DEL 7.69e-05 0.005320 0.005150
-## 306 PyrT27 A.Methanol          PuD0 Q.Tai-DEL 2.35e-05 0.000354 0.000534
-## 307 PyrT34 A.Methanol          PuD0 Q.Tai-DEL 1.32e-05 0.001180 0.001380
-## 308 PyrT35 A.Methanol          PuD0 Q.Tai-DEL 2.80e-05 0.001390 0.000939
-## 309 PyrT36 A.Methanol          PuD0 Q.Tai-DEL 2.04e-05 0.000917 0.001220
-## 310 PyrT44 A.Methanol          PuD0 Q.Tai-DEL 5.47e-06 0.000394 0.000717
-## 311 PyrT54      B.5mM         PreD1 Q.Tai-DEL 1.41e-05 0.000786 0.001430
-## 312 PyrT55      B.5mM         PreD1 Q.Tai-DEL 7.04e-05 0.002350 0.003510
-## 313 PyrT56      B.5mM         PreD1 Q.Tai-DEL 4.16e-05 0.001280 0.002580
-## 314 PyrT57      B.5mM         PreD1 Q.Tai-DEL 6.59e-05 0.001690 0.003140
-## 315 PyrT61      B.5mM         PreD1 Q.Tai-DEL 5.24e-05 0.002080 0.002640
-## 316 PyrT62      B.5mM         PreD1 Q.Tai-DEL 1.47e-04 0.005070 0.003120
-## 317 PyrT52      B.5mM          PuD0 Q.Tai-DEL 2.65e-05 0.007550 0.001940
-## 318 PyrT58      B.5mM          PuD0 Q.Tai-DEL 2.43e-05 0.000361 0.002640
-## 319 PyrT59      B.5mM          PuD0 Q.Tai-DEL 1.91e-05 0.001370 0.002130
-## 320 PyrT60      B.5mM          PuD0 Q.Tai-DEL 1.45e-05 0.001480 0.002030
-## 321 PyrT63      B.5mM          PuD0 Q.Tai-DEL 1.12e-05 0.001020 0.001820
-## 322 PyrT64      B.5mM          PuD0 Q.Tai-DEL 4.64e-06 0.000464 0.000970
+<pre><code>##     Sample  Treatment Stage.treated      Gene SDM.gene   rp49.2
+## 300 PyrT21 A.Methanol         PreD1 Q.Tai-DEL 2.33e-05 0.002420
+## 301 PyrT11 A.Methanol         PreD1 Q.Tai-DEL 2.18e-05 0.004680
+## 302 PyrT19 A.Methanol         PreD1 Q.Tai-DEL 3.30e-05 0.002680
+## 303 PyrT20 A.Methanol         PreD1 Q.Tai-DEL 5.12e-05 0.004500
+## 304 PyrT30 A.Methanol         PreD1 Q.Tai-DEL 6.59e-05 0.003430
+## 305 PyrT37 A.Methanol         PreD1 Q.Tai-DEL 7.69e-05 0.005150
+## 306 PyrT27 A.Methanol          PuD0 Q.Tai-DEL 2.35e-05 0.000534
+## 307 PyrT34 A.Methanol          PuD0 Q.Tai-DEL 1.32e-05 0.001380
+## 308 PyrT35 A.Methanol          PuD0 Q.Tai-DEL 2.80e-05 0.000939
+## 309 PyrT36 A.Methanol          PuD0 Q.Tai-DEL 2.04e-05 0.001220
+## 310 PyrT44 A.Methanol          PuD0 Q.Tai-DEL 5.47e-06 0.000717
+## 311 PyrT54      B.5mM         PreD1 Q.Tai-DEL 1.41e-05 0.001430
+## 312 PyrT55      B.5mM         PreD1 Q.Tai-DEL 7.04e-05 0.003510
+## 313 PyrT56      B.5mM         PreD1 Q.Tai-DEL 4.16e-05 0.002580
+## 314 PyrT57      B.5mM         PreD1 Q.Tai-DEL 6.59e-05 0.003140
+## 315 PyrT61      B.5mM         PreD1 Q.Tai-DEL 5.24e-05 0.002640
+## 316 PyrT62      B.5mM         PreD1 Q.Tai-DEL 1.47e-04 0.003120
+## 317 PyrT52      B.5mM          PuD0 Q.Tai-DEL 2.65e-05 0.001940
+## 318 PyrT58      B.5mM          PuD0 Q.Tai-DEL 2.43e-05 0.002640
+## 319 PyrT59      B.5mM          PuD0 Q.Tai-DEL 1.91e-05 0.002130
+## 320 PyrT60      B.5mM          PuD0 Q.Tai-DEL 1.45e-05 0.002030
+## 321 PyrT63      B.5mM          PuD0 Q.Tai-DEL 1.12e-05 0.001820
+## 322 PyrT64      B.5mM          PuD0 Q.Tai-DEL 4.64e-06 0.000970
 ##     gene.normal
 ## 300 0.009628099
 ## 301 0.004658120
@@ -472,54 +423,30 @@ t.test(gene.normal~Treatment,data=pupatestPkTai)</code></pre>
 <pre class="r"><code>PkKrh1&lt;-subset(dataBs,dataBs$Gene==&quot;D.kr-h1&quot;)
 PkKrh1box&lt;-subset(dataB, Gene==&quot;D.kr-h1&quot;)
 PkKrh1box</code></pre>
-<pre><code>##    Sample  Treatment Stage.treated    Gene SDM.gene   rp49.1   rp49.2
-## 1  PyrT21 A.Methanol         PreD1 D.kr-h1 1.87e-05 0.001770 0.002420
-## 2  PyrT11 A.Methanol         PreD1 D.kr-h1 1.99e-05 0.004210 0.004680
-## 3  PyrT19 A.Methanol         PreD1 D.kr-h1 8.93e-06 0.002010 0.002680
-## 4  PyrT20 A.Methanol         PreD1 D.kr-h1 1.64e-05 0.005270 0.004500
-## 5  PyrT30 A.Methanol         PreD1 D.kr-h1 1.66e-05 0.003630 0.003430
-## 6  PyrT37 A.Methanol         PreD1 D.kr-h1 1.32e-05 0.005320 0.005150
-## 7  PyrT27 A.Methanol          PuD0 D.kr-h1 3.24e-05 0.000354 0.000534
-## 8  PyrT34 A.Methanol          PuD0 D.kr-h1 1.63e-05 0.001180 0.001380
-## 9  PyrT35 A.Methanol          PuD0 D.kr-h1 2.65e-05 0.001390 0.000939
-## 10 PyrT36 A.Methanol          PuD0 D.kr-h1 1.80e-05 0.000917 0.001220
-## 11 PyrT44 A.Methanol          PuD0 D.kr-h1 1.20e-05 0.000394 0.000717
-## 12 PyrT54      B.5mM         PreD1 D.kr-h1 2.61e-04 0.000786 0.001430
-## 13 PyrT55      B.5mM         PreD1 D.kr-h1 9.79e-04 0.002350 0.003510
-## 14 PyrT56      B.5mM         PreD1 D.kr-h1 4.73e-04 0.001280 0.002580
-## 15 PyrT57      B.5mM         PreD1 D.kr-h1 5.55e-04 0.001690 0.003140
-## 16 PyrT61      B.5mM         PreD1 D.kr-h1 5.37e-04 0.002080 0.002640
-## 17 PyrT62      B.5mM         PreD1 D.kr-h1 9.34e-04 0.005070 0.003120
-## 18 PyrT52      B.5mM          PuD0 D.kr-h1 4.85e-04 0.007550 0.001940
-## 19 PyrT58      B.5mM          PuD0 D.kr-h1 4.98e-04 0.000361 0.002640
-## 20 PyrT59      B.5mM          PuD0 D.kr-h1 2.88e-04 0.001370 0.002130
-## 21 PyrT60      B.5mM          PuD0 D.kr-h1 2.44e-04 0.001480 0.002030
-## 22 PyrT63      B.5mM          PuD0 D.kr-h1 2.66e-04 0.001020 0.001820
-## 23 PyrT64      B.5mM          PuD0 D.kr-h1 1.64e-04 0.000464 0.000970
-##    gene.normal
-## 1  0.007727273
-## 2  0.004252137
-## 3  0.003332090
-## 4  0.003644444
-## 5  0.004839650
-## 6  0.002563107
-## 7  0.060674157
-## 8  0.011811594
-## 9  0.028221512
-## 10 0.014754098
-## 11 0.016736402
-## 12 0.182517483
-## 13 0.278917379
-## 14 0.183333333
-## 15 0.176751592
-## 16 0.203409091
-## 17 0.299358974
-## 18 0.250000000
-## 19 0.188636364
-## 20 0.135211268
-## 21 0.120197044
-## 22 0.146153846
-## 23 0.169072165</code></pre>
+<pre><code>##    Sample  Treatment Stage.treated    Gene SDM.gene   rp49.2 gene.normal
+## 1  PyrT21 A.Methanol         PreD1 D.kr-h1 1.87e-05 0.002420 0.007727273
+## 2  PyrT11 A.Methanol         PreD1 D.kr-h1 1.99e-05 0.004680 0.004252137
+## 3  PyrT19 A.Methanol         PreD1 D.kr-h1 8.93e-06 0.002680 0.003332090
+## 4  PyrT20 A.Methanol         PreD1 D.kr-h1 1.64e-05 0.004500 0.003644444
+## 5  PyrT30 A.Methanol         PreD1 D.kr-h1 1.66e-05 0.003430 0.004839650
+## 6  PyrT37 A.Methanol         PreD1 D.kr-h1 1.32e-05 0.005150 0.002563107
+## 7  PyrT27 A.Methanol          PuD0 D.kr-h1 3.24e-05 0.000534 0.060674157
+## 8  PyrT34 A.Methanol          PuD0 D.kr-h1 1.63e-05 0.001380 0.011811594
+## 9  PyrT35 A.Methanol          PuD0 D.kr-h1 2.65e-05 0.000939 0.028221512
+## 10 PyrT36 A.Methanol          PuD0 D.kr-h1 1.80e-05 0.001220 0.014754098
+## 11 PyrT44 A.Methanol          PuD0 D.kr-h1 1.20e-05 0.000717 0.016736402
+## 12 PyrT54      B.5mM         PreD1 D.kr-h1 2.61e-04 0.001430 0.182517483
+## 13 PyrT55      B.5mM         PreD1 D.kr-h1 9.79e-04 0.003510 0.278917379
+## 14 PyrT56      B.5mM         PreD1 D.kr-h1 4.73e-04 0.002580 0.183333333
+## 15 PyrT57      B.5mM         PreD1 D.kr-h1 5.55e-04 0.003140 0.176751592
+## 16 PyrT61      B.5mM         PreD1 D.kr-h1 5.37e-04 0.002640 0.203409091
+## 17 PyrT62      B.5mM         PreD1 D.kr-h1 9.34e-04 0.003120 0.299358974
+## 18 PyrT52      B.5mM          PuD0 D.kr-h1 4.85e-04 0.001940 0.250000000
+## 19 PyrT58      B.5mM          PuD0 D.kr-h1 4.98e-04 0.002640 0.188636364
+## 20 PyrT59      B.5mM          PuD0 D.kr-h1 2.88e-04 0.002130 0.135211268
+## 21 PyrT60      B.5mM          PuD0 D.kr-h1 2.44e-04 0.002030 0.120197044
+## 22 PyrT63      B.5mM          PuD0 D.kr-h1 2.66e-04 0.001820 0.146153846
+## 23 PyrT64      B.5mM          PuD0 D.kr-h1 1.64e-04 0.000970 0.169072165</code></pre>
 <pre class="r"><code>PkKrh1box&lt;-select(PkKrh1box, gene.normal,Stage.treated, Treatment)
 Krh1box&lt;-ggplot(data = PkKrh1box, aes(x = Stage.treated, y = gene.normal)) + 
   geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
@@ -540,30 +467,30 @@ dev.off()</code></pre>
 <pre class="r"><code>#boxplot
 PkKrh1Abox&lt;-subset(dataB, Gene==&quot;E.Pkkr-h1A&quot;)
 PkKrh1Abox</code></pre>
-<pre><code>##    Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 24 PyrT21 A.Methanol         PreD1 E.Pkkr-h1A 4.43e-06 0.001770 0.002420
-## 25 PyrT11 A.Methanol         PreD1 E.Pkkr-h1A 5.73e-06 0.004210 0.004680
-## 26 PyrT19 A.Methanol         PreD1 E.Pkkr-h1A 1.93e-06 0.002010 0.002680
-## 27 PyrT20 A.Methanol         PreD1 E.Pkkr-h1A 3.32e-06 0.005270 0.004500
-## 28 PyrT30 A.Methanol         PreD1 E.Pkkr-h1A 3.74e-06 0.003630 0.003430
-## 29 PyrT37 A.Methanol         PreD1 E.Pkkr-h1A 4.30e-06 0.005320 0.005150
-## 30 PyrT27 A.Methanol          PuD0 E.Pkkr-h1A 4.80e-06 0.000354 0.000534
-## 31 PyrT34 A.Methanol          PuD0 E.Pkkr-h1A 3.63e-06 0.001180 0.001380
-## 32 PyrT35 A.Methanol          PuD0 E.Pkkr-h1A 5.40e-06 0.001390 0.000939
-## 33 PyrT36 A.Methanol          PuD0 E.Pkkr-h1A 2.44e-06 0.000917 0.001220
-## 34 PyrT44 A.Methanol          PuD0 E.Pkkr-h1A 2.03e-06 0.000394 0.000717
-## 35 PyrT54      B.5mM         PreD1 E.Pkkr-h1A 6.53e-05 0.000786 0.001430
-## 36 PyrT55      B.5mM         PreD1 E.Pkkr-h1A 3.12e-04 0.002350 0.003510
-## 37 PyrT56      B.5mM         PreD1 E.Pkkr-h1A 1.42e-04 0.001280 0.002580
-## 38 PyrT57      B.5mM         PreD1 E.Pkkr-h1A 1.72e-04 0.001690 0.003140
-## 39 PyrT61      B.5mM         PreD1 E.Pkkr-h1A 1.74e-04 0.002080 0.002640
-## 40 PyrT62      B.5mM         PreD1 E.Pkkr-h1A 2.19e-04 0.005070 0.003120
-## 41 PyrT52      B.5mM          PuD0 E.Pkkr-h1A 8.27e-05 0.007550 0.001940
-## 42 PyrT58      B.5mM          PuD0 E.Pkkr-h1A 4.86e-05 0.000361 0.002640
-## 43 PyrT59      B.5mM          PuD0 E.Pkkr-h1A 2.52e-05 0.001370 0.002130
-## 44 PyrT60      B.5mM          PuD0 E.Pkkr-h1A 3.08e-05 0.001480 0.002030
-## 45 PyrT63      B.5mM          PuD0 E.Pkkr-h1A 2.54e-05 0.001020 0.001820
-## 46 PyrT64      B.5mM          PuD0 E.Pkkr-h1A 1.42e-05 0.000464 0.000970
+<pre><code>##    Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 24 PyrT21 A.Methanol         PreD1 E.Pkkr-h1A 4.43e-06 0.002420
+## 25 PyrT11 A.Methanol         PreD1 E.Pkkr-h1A 5.73e-06 0.004680
+## 26 PyrT19 A.Methanol         PreD1 E.Pkkr-h1A 1.93e-06 0.002680
+## 27 PyrT20 A.Methanol         PreD1 E.Pkkr-h1A 3.32e-06 0.004500
+## 28 PyrT30 A.Methanol         PreD1 E.Pkkr-h1A 3.74e-06 0.003430
+## 29 PyrT37 A.Methanol         PreD1 E.Pkkr-h1A 4.30e-06 0.005150
+## 30 PyrT27 A.Methanol          PuD0 E.Pkkr-h1A 4.80e-06 0.000534
+## 31 PyrT34 A.Methanol          PuD0 E.Pkkr-h1A 3.63e-06 0.001380
+## 32 PyrT35 A.Methanol          PuD0 E.Pkkr-h1A 5.40e-06 0.000939
+## 33 PyrT36 A.Methanol          PuD0 E.Pkkr-h1A 2.44e-06 0.001220
+## 34 PyrT44 A.Methanol          PuD0 E.Pkkr-h1A 2.03e-06 0.000717
+## 35 PyrT54      B.5mM         PreD1 E.Pkkr-h1A 6.53e-05 0.001430
+## 36 PyrT55      B.5mM         PreD1 E.Pkkr-h1A 3.12e-04 0.003510
+## 37 PyrT56      B.5mM         PreD1 E.Pkkr-h1A 1.42e-04 0.002580
+## 38 PyrT57      B.5mM         PreD1 E.Pkkr-h1A 1.72e-04 0.003140
+## 39 PyrT61      B.5mM         PreD1 E.Pkkr-h1A 1.74e-04 0.002640
+## 40 PyrT62      B.5mM         PreD1 E.Pkkr-h1A 2.19e-04 0.003120
+## 41 PyrT52      B.5mM          PuD0 E.Pkkr-h1A 8.27e-05 0.001940
+## 42 PyrT58      B.5mM          PuD0 E.Pkkr-h1A 4.86e-05 0.002640
+## 43 PyrT59      B.5mM          PuD0 E.Pkkr-h1A 2.52e-05 0.002130
+## 44 PyrT60      B.5mM          PuD0 E.Pkkr-h1A 3.08e-05 0.002030
+## 45 PyrT63      B.5mM          PuD0 E.Pkkr-h1A 2.54e-05 0.001820
+## 46 PyrT64      B.5mM          PuD0 E.Pkkr-h1A 1.42e-05 0.000970
 ##     gene.normal
 ## 24 0.0018305785
 ## 25 0.0012243590
@@ -608,30 +535,30 @@ dev.off()</code></pre>
 <pre class="r"><code>#boxplot
 PkKrh1Bbox&lt;-subset(dataB, Gene==&quot;F.Pkkr-h1B&quot;)
 PkKrh1Bbox</code></pre>
-<pre><code>##    Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 47 PyrT21 A.Methanol         PreD1 F.Pkkr-h1B 6.83e-06 0.001770 0.002420
-## 48 PyrT11 A.Methanol         PreD1 F.Pkkr-h1B 2.66e-08 0.004210 0.004680
-## 49 PyrT19 A.Methanol         PreD1 F.Pkkr-h1B 8.81e-08 0.002010 0.002680
-## 50 PyrT20 A.Methanol         PreD1 F.Pkkr-h1B 1.14e-08 0.005270 0.004500
-## 51 PyrT30 A.Methanol         PreD1 F.Pkkr-h1B 8.27e-09 0.003630 0.003430
-## 52 PyrT37 A.Methanol         PreD1 F.Pkkr-h1B 2.64e-08 0.005320 0.005150
-## 53 PyrT27 A.Methanol          PuD0 F.Pkkr-h1B 3.34e-08 0.000354 0.000534
-## 54 PyrT34 A.Methanol          PuD0 F.Pkkr-h1B 3.03e-07 0.001180 0.001380
-## 55 PyrT35 A.Methanol          PuD0 F.Pkkr-h1B 4.83e-08 0.001390 0.000939
-## 56 PyrT36 A.Methanol          PuD0 F.Pkkr-h1B 3.21e-07 0.000917 0.001220
-## 57 PyrT44 A.Methanol          PuD0 F.Pkkr-h1B 1.21e-06 0.000394 0.000717
-## 58 PyrT54      B.5mM         PreD1 F.Pkkr-h1B 9.56e-08 0.000786 0.001430
-## 59 PyrT55      B.5mM         PreD1 F.Pkkr-h1B 9.12e-07 0.002350 0.003510
-## 60 PyrT56      B.5mM         PreD1 F.Pkkr-h1B 3.64e-07 0.001280 0.002580
-## 61 PyrT57      B.5mM         PreD1 F.Pkkr-h1B 2.19e-07 0.001690 0.003140
-## 62 PyrT61      B.5mM         PreD1 F.Pkkr-h1B 2.75e-07 0.002080 0.002640
-## 63 PyrT62      B.5mM         PreD1 F.Pkkr-h1B 4.78e-07 0.005070 0.003120
-## 64 PyrT52      B.5mM          PuD0 F.Pkkr-h1B 2.96e-07 0.007550 0.001940
-## 65 PyrT58      B.5mM          PuD0 F.Pkkr-h1B 1.52e-07 0.000361 0.002640
-## 66 PyrT59      B.5mM          PuD0 F.Pkkr-h1B 5.59e-08 0.001370 0.002130
-## 67 PyrT60      B.5mM          PuD0 F.Pkkr-h1B 1.06e-07 0.001480 0.002030
-## 68 PyrT63      B.5mM          PuD0 F.Pkkr-h1B 3.60e-08 0.001020 0.001820
-## 69 PyrT64      B.5mM          PuD0 F.Pkkr-h1B 7.64e-07 0.000464 0.000970
+<pre><code>##    Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 47 PyrT21 A.Methanol         PreD1 F.Pkkr-h1B 6.83e-06 0.002420
+## 48 PyrT11 A.Methanol         PreD1 F.Pkkr-h1B 2.66e-08 0.004680
+## 49 PyrT19 A.Methanol         PreD1 F.Pkkr-h1B 8.81e-08 0.002680
+## 50 PyrT20 A.Methanol         PreD1 F.Pkkr-h1B 1.14e-08 0.004500
+## 51 PyrT30 A.Methanol         PreD1 F.Pkkr-h1B 8.27e-09 0.003430
+## 52 PyrT37 A.Methanol         PreD1 F.Pkkr-h1B 2.64e-08 0.005150
+## 53 PyrT27 A.Methanol          PuD0 F.Pkkr-h1B 3.34e-08 0.000534
+## 54 PyrT34 A.Methanol          PuD0 F.Pkkr-h1B 3.03e-07 0.001380
+## 55 PyrT35 A.Methanol          PuD0 F.Pkkr-h1B 4.83e-08 0.000939
+## 56 PyrT36 A.Methanol          PuD0 F.Pkkr-h1B 3.21e-07 0.001220
+## 57 PyrT44 A.Methanol          PuD0 F.Pkkr-h1B 1.21e-06 0.000717
+## 58 PyrT54      B.5mM         PreD1 F.Pkkr-h1B 9.56e-08 0.001430
+## 59 PyrT55      B.5mM         PreD1 F.Pkkr-h1B 9.12e-07 0.003510
+## 60 PyrT56      B.5mM         PreD1 F.Pkkr-h1B 3.64e-07 0.002580
+## 61 PyrT57      B.5mM         PreD1 F.Pkkr-h1B 2.19e-07 0.003140
+## 62 PyrT61      B.5mM         PreD1 F.Pkkr-h1B 2.75e-07 0.002640
+## 63 PyrT62      B.5mM         PreD1 F.Pkkr-h1B 4.78e-07 0.003120
+## 64 PyrT52      B.5mM          PuD0 F.Pkkr-h1B 2.96e-07 0.001940
+## 65 PyrT58      B.5mM          PuD0 F.Pkkr-h1B 1.52e-07 0.002640
+## 66 PyrT59      B.5mM          PuD0 F.Pkkr-h1B 5.59e-08 0.002130
+## 67 PyrT60      B.5mM          PuD0 F.Pkkr-h1B 1.06e-07 0.002030
+## 68 PyrT63      B.5mM          PuD0 F.Pkkr-h1B 3.60e-08 0.001820
+## 69 PyrT64      B.5mM          PuD0 F.Pkkr-h1B 7.64e-07 0.000970
 ##     gene.normal
 ## 47 2.822314e-03
 ## 48 5.683761e-06
@@ -762,7 +689,7 @@ t.test(gene.normal~Treatment,data=pupatestPkkrh1B)</code></pre>
 <div id="figure-5a-expression-profile-of-pkbr1-and-pkbr2" class="section level3">
 <h3>Figure 5A: Expression profile of Pkbr1 and Pkbr2</h3>
 <pre class="r"><code>Figure5&lt;-subset(dataA3,Gene==&quot;SDM.Pkbr1&quot;|Gene==&quot;SDM.Pkbr2&quot;|Gene==&quot;SDM.Pkbr3&quot;)
-pFig5&lt;-ggplot(Figure5, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFig5&lt;-ggplot(Figure5, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
    geom_point(aes(linetype=Sex))+
    geom_line(aes(linetype=Sex))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = &quot;black&quot;))+
@@ -776,7 +703,7 @@ pFig5+facet_grid(Gene~.,scale=&quot;free&quot;)</code></pre>
 <div id="figure-s7a-expression-profile-of-pkbr1z2-z4-pkbr2-z2-and-z4-and-pkbr3z2" class="section level3">
 <h3>Figure S7A: Expression profile of Pkbr1Z2, Z4, Pkbr2, Z2 and Z4 and Pkbr3Z2</h3>
 <pre class="r"><code>FigureS7A&lt;-subset(dataA3,Gene==&quot;SDM.Pkbr1.Z2&quot;|Gene==&quot;SDM.Pkbr1.Z4&quot;|Gene==&quot;SDM.Pkbr2.Z2&quot;|Gene==&quot;SDM.Pkbr2.Z4&quot;|Gene==&quot;SDM.Pkbr3.Z2&quot;)
-pFigS7A&lt;-ggplot(FigureS7A, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFigS7A&lt;-ggplot(FigureS7A, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
    geom_point(aes(linetype=Sex))+
    geom_line(aes(linetype=Sex))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = &quot;black&quot;))+
@@ -792,54 +719,30 @@ pFigS7A+facet_grid(Gene~.,scale=&quot;free&quot;)</code></pre>
 <pre class="r"><code>#boxplot
 Pkbr1box&lt;-subset(dataB, Gene==&quot;G.Pkbr1&quot;)
 Pkbr1box</code></pre>
-<pre><code>##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.1   rp49.2
-## 93  PyrT21 A.Methanol         PreD1 G.Pkbr1 7.81e-06 0.001770 0.002420
-## 94  PyrT11 A.Methanol         PreD1 G.Pkbr1 1.21e-03 0.004210 0.004680
-## 95  PyrT19 A.Methanol         PreD1 G.Pkbr1 9.04e-06 0.002010 0.002680
-## 96  PyrT20 A.Methanol         PreD1 G.Pkbr1 4.92e-05 0.005270 0.004500
-## 97  PyrT30 A.Methanol         PreD1 G.Pkbr1 4.83e-05 0.003630 0.003430
-## 98  PyrT37 A.Methanol         PreD1 G.Pkbr1 1.84e-04 0.005320 0.005150
-## 99  PyrT27 A.Methanol          PuD0 G.Pkbr1 1.10e-05 0.000354 0.000534
-## 100 PyrT34 A.Methanol          PuD0 G.Pkbr1 1.48e-05 0.001180 0.001380
-## 101 PyrT35 A.Methanol          PuD0 G.Pkbr1 5.93e-06 0.001390 0.000939
-## 102 PyrT36 A.Methanol          PuD0 G.Pkbr1 2.07e-06 0.000917 0.001220
-## 103 PyrT44 A.Methanol          PuD0 G.Pkbr1 8.59e-07 0.000394 0.000717
-## 104 PyrT54      B.5mM         PreD1 G.Pkbr1 4.27e-06 0.000786 0.001430
-## 105 PyrT55      B.5mM         PreD1 G.Pkbr1 1.17e-05 0.002350 0.003510
-## 106 PyrT56      B.5mM         PreD1 G.Pkbr1 4.43e-06 0.001280 0.002580
-## 107 PyrT57      B.5mM         PreD1 G.Pkbr1 3.26e-05 0.001690 0.003140
-## 108 PyrT61      B.5mM         PreD1 G.Pkbr1 1.48e-05 0.002080 0.002640
-## 109 PyrT62      B.5mM         PreD1 G.Pkbr1 3.95e-05 0.005070 0.003120
-## 110 PyrT52      B.5mM          PuD0 G.Pkbr1 6.21e-06 0.007550 0.001940
-## 111 PyrT58      B.5mM          PuD0 G.Pkbr1 4.51e-06 0.000361 0.002640
-## 112 PyrT59      B.5mM          PuD0 G.Pkbr1 1.52e-06 0.001370 0.002130
-## 113 PyrT60      B.5mM          PuD0 G.Pkbr1 4.28e-07 0.001480 0.002030
-## 114 PyrT63      B.5mM          PuD0 G.Pkbr1 1.10e-06 0.001020 0.001820
-## 115 PyrT64      B.5mM          PuD0 G.Pkbr1 4.09e-07 0.000464 0.000970
-##      gene.normal
-## 93  0.0032272727
-## 94  0.2585470085
-## 95  0.0033731343
-## 96  0.0109333333
-## 97  0.0140816327
-## 98  0.0357281553
-## 99  0.0205992509
-## 100 0.0107246377
-## 101 0.0063152290
-## 102 0.0016967213
-## 103 0.0011980474
-## 104 0.0029860140
-## 105 0.0033333333
-## 106 0.0017170543
-## 107 0.0103821656
-## 108 0.0056060606
-## 109 0.0126602564
-## 110 0.0032010309
-## 111 0.0017083333
-## 112 0.0007136150
-## 113 0.0002108374
-## 114 0.0006043956
-## 115 0.0004216495</code></pre>
+<pre><code>##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.2  gene.normal
+## 93  PyrT21 A.Methanol         PreD1 G.Pkbr1 7.81e-06 0.002420 0.0032272727
+## 94  PyrT11 A.Methanol         PreD1 G.Pkbr1 1.21e-03 0.004680 0.2585470085
+## 95  PyrT19 A.Methanol         PreD1 G.Pkbr1 9.04e-06 0.002680 0.0033731343
+## 96  PyrT20 A.Methanol         PreD1 G.Pkbr1 4.92e-05 0.004500 0.0109333333
+## 97  PyrT30 A.Methanol         PreD1 G.Pkbr1 4.83e-05 0.003430 0.0140816327
+## 98  PyrT37 A.Methanol         PreD1 G.Pkbr1 1.84e-04 0.005150 0.0357281553
+## 99  PyrT27 A.Methanol          PuD0 G.Pkbr1 1.10e-05 0.000534 0.0205992509
+## 100 PyrT34 A.Methanol          PuD0 G.Pkbr1 1.48e-05 0.001380 0.0107246377
+## 101 PyrT35 A.Methanol          PuD0 G.Pkbr1 5.93e-06 0.000939 0.0063152290
+## 102 PyrT36 A.Methanol          PuD0 G.Pkbr1 2.07e-06 0.001220 0.0016967213
+## 103 PyrT44 A.Methanol          PuD0 G.Pkbr1 8.59e-07 0.000717 0.0011980474
+## 104 PyrT54      B.5mM         PreD1 G.Pkbr1 4.27e-06 0.001430 0.0029860140
+## 105 PyrT55      B.5mM         PreD1 G.Pkbr1 1.17e-05 0.003510 0.0033333333
+## 106 PyrT56      B.5mM         PreD1 G.Pkbr1 4.43e-06 0.002580 0.0017170543
+## 107 PyrT57      B.5mM         PreD1 G.Pkbr1 3.26e-05 0.003140 0.0103821656
+## 108 PyrT61      B.5mM         PreD1 G.Pkbr1 1.48e-05 0.002640 0.0056060606
+## 109 PyrT62      B.5mM         PreD1 G.Pkbr1 3.95e-05 0.003120 0.0126602564
+## 110 PyrT52      B.5mM          PuD0 G.Pkbr1 6.21e-06 0.001940 0.0032010309
+## 111 PyrT58      B.5mM          PuD0 G.Pkbr1 4.51e-06 0.002640 0.0017083333
+## 112 PyrT59      B.5mM          PuD0 G.Pkbr1 1.52e-06 0.002130 0.0007136150
+## 113 PyrT60      B.5mM          PuD0 G.Pkbr1 4.28e-07 0.002030 0.0002108374
+## 114 PyrT63      B.5mM          PuD0 G.Pkbr1 1.10e-06 0.001820 0.0006043956
+## 115 PyrT64      B.5mM          PuD0 G.Pkbr1 4.09e-07 0.000970 0.0004216495</code></pre>
 <pre class="r"><code>Pkbr1box&lt;-select(Pkbr1box, gene.normal,Stage.treated, Treatment)
 br1box&lt;-ggplot(data = Pkbr1box, aes(x = Stage.treated, y = gene.normal)) + 
   geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
@@ -863,30 +766,30 @@ dev.off()</code></pre>
 <pre class="r"><code>#boxplot
 Pkbr1Z2box&lt;-subset(dataB, Gene==&quot;H.Pkbr1.Z2&quot;)
 Pkbr1Z2box</code></pre>
-<pre><code>##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 162 PyrT21 A.Methanol         PreD1 H.Pkbr1.Z2 8.22e-05 0.001770 0.002420
-## 163 PyrT11 A.Methanol         PreD1 H.Pkbr1.Z2 8.16e-05 0.004210 0.004680
-## 164 PyrT19 A.Methanol         PreD1 H.Pkbr1.Z2 6.33e-05 0.002010 0.002680
-## 165 PyrT20 A.Methanol         PreD1 H.Pkbr1.Z2 8.40e-05 0.005270 0.004500
-## 166 PyrT30 A.Methanol         PreD1 H.Pkbr1.Z2 6.07e-05 0.003630 0.003430
-## 167 PyrT37 A.Methanol         PreD1 H.Pkbr1.Z2 1.11e-04 0.005320 0.005150
-## 168 PyrT27 A.Methanol          PuD0 H.Pkbr1.Z2 1.44e-05 0.000354 0.000534
-## 169 PyrT34 A.Methanol          PuD0 H.Pkbr1.Z2 3.86e-05 0.001180 0.001380
-## 170 PyrT35 A.Methanol          PuD0 H.Pkbr1.Z2 3.89e-05 0.001390 0.000939
-## 171 PyrT36 A.Methanol          PuD0 H.Pkbr1.Z2 2.87e-05 0.000917 0.001220
-## 172 PyrT44 A.Methanol          PuD0 H.Pkbr1.Z2 2.31e-05 0.000394 0.000717
-## 173 PyrT54      B.5mM         PreD1 H.Pkbr1.Z2 4.71e-05 0.000786 0.001430
-## 174 PyrT55      B.5mM         PreD1 H.Pkbr1.Z2 5.20e-05 0.002350 0.003510
-## 175 PyrT56      B.5mM         PreD1 H.Pkbr1.Z2 2.89e-05 0.001280 0.002580
-## 176 PyrT57      B.5mM         PreD1 H.Pkbr1.Z2 6.84e-05 0.001690 0.003140
-## 177 PyrT61      B.5mM         PreD1 H.Pkbr1.Z2 2.75e-05 0.002080 0.002640
-## 178 PyrT62      B.5mM         PreD1 H.Pkbr1.Z2 4.39e-05 0.005070 0.003120
-## 179 PyrT52      B.5mM          PuD0 H.Pkbr1.Z2 1.11e-05 0.007550 0.001940
-## 180 PyrT58      B.5mM          PuD0 H.Pkbr1.Z2 9.55e-06 0.000361 0.002640
-## 181 PyrT59      B.5mM          PuD0 H.Pkbr1.Z2 9.29e-06 0.001370 0.002130
-## 182 PyrT60      B.5mM          PuD0 H.Pkbr1.Z2 5.63e-06 0.001480 0.002030
-## 183 PyrT63      B.5mM          PuD0 H.Pkbr1.Z2 1.74e-05 0.001020 0.001820
-## 184 PyrT64      B.5mM          PuD0 H.Pkbr1.Z2 9.76e-06 0.000464 0.000970
+<pre><code>##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 162 PyrT21 A.Methanol         PreD1 H.Pkbr1.Z2 8.22e-05 0.002420
+## 163 PyrT11 A.Methanol         PreD1 H.Pkbr1.Z2 8.16e-05 0.004680
+## 164 PyrT19 A.Methanol         PreD1 H.Pkbr1.Z2 6.33e-05 0.002680
+## 165 PyrT20 A.Methanol         PreD1 H.Pkbr1.Z2 8.40e-05 0.004500
+## 166 PyrT30 A.Methanol         PreD1 H.Pkbr1.Z2 6.07e-05 0.003430
+## 167 PyrT37 A.Methanol         PreD1 H.Pkbr1.Z2 1.11e-04 0.005150
+## 168 PyrT27 A.Methanol          PuD0 H.Pkbr1.Z2 1.44e-05 0.000534
+## 169 PyrT34 A.Methanol          PuD0 H.Pkbr1.Z2 3.86e-05 0.001380
+## 170 PyrT35 A.Methanol          PuD0 H.Pkbr1.Z2 3.89e-05 0.000939
+## 171 PyrT36 A.Methanol          PuD0 H.Pkbr1.Z2 2.87e-05 0.001220
+## 172 PyrT44 A.Methanol          PuD0 H.Pkbr1.Z2 2.31e-05 0.000717
+## 173 PyrT54      B.5mM         PreD1 H.Pkbr1.Z2 4.71e-05 0.001430
+## 174 PyrT55      B.5mM         PreD1 H.Pkbr1.Z2 5.20e-05 0.003510
+## 175 PyrT56      B.5mM         PreD1 H.Pkbr1.Z2 2.89e-05 0.002580
+## 176 PyrT57      B.5mM         PreD1 H.Pkbr1.Z2 6.84e-05 0.003140
+## 177 PyrT61      B.5mM         PreD1 H.Pkbr1.Z2 2.75e-05 0.002640
+## 178 PyrT62      B.5mM         PreD1 H.Pkbr1.Z2 4.39e-05 0.003120
+## 179 PyrT52      B.5mM          PuD0 H.Pkbr1.Z2 1.11e-05 0.001940
+## 180 PyrT58      B.5mM          PuD0 H.Pkbr1.Z2 9.55e-06 0.002640
+## 181 PyrT59      B.5mM          PuD0 H.Pkbr1.Z2 9.29e-06 0.002130
+## 182 PyrT60      B.5mM          PuD0 H.Pkbr1.Z2 5.63e-06 0.002030
+## 183 PyrT63      B.5mM          PuD0 H.Pkbr1.Z2 1.74e-05 0.001820
+## 184 PyrT64      B.5mM          PuD0 H.Pkbr1.Z2 9.76e-06 0.000970
 ##     gene.normal
 ## 162 0.033966942
 ## 163 0.017435897
@@ -934,30 +837,30 @@ dev.off()</code></pre>
 <pre class="r"><code>#boxplot
 Pkbr1Z4box&lt;-subset(dataB, Gene==&quot;I.Pkbr1.Z4&quot;)
 Pkbr1Z4box</code></pre>
-<pre><code>##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 185 PyrT21 A.Methanol         PreD1 I.Pkbr1.Z4 7.82e-05 0.001770 0.002420
-## 186 PyrT11 A.Methanol         PreD1 I.Pkbr1.Z4 7.51e-05 0.004210 0.004680
-## 187 PyrT19 A.Methanol         PreD1 I.Pkbr1.Z4 6.70e-05 0.002010 0.002680
-## 188 PyrT20 A.Methanol         PreD1 I.Pkbr1.Z4 7.87e-05 0.005270 0.004500
-## 189 PyrT30 A.Methanol         PreD1 I.Pkbr1.Z4 6.26e-05 0.003630 0.003430
-## 190 PyrT37 A.Methanol         PreD1 I.Pkbr1.Z4 1.14e-04 0.005320 0.005150
-## 191 PyrT27 A.Methanol          PuD0 I.Pkbr1.Z4 2.06e-05 0.000354 0.000534
-## 192 PyrT34 A.Methanol          PuD0 I.Pkbr1.Z4 4.29e-05 0.001180 0.001380
-## 193 PyrT35 A.Methanol          PuD0 I.Pkbr1.Z4 4.24e-05 0.001390 0.000939
-## 194 PyrT36 A.Methanol          PuD0 I.Pkbr1.Z4 3.33e-05 0.000917 0.001220
-## 195 PyrT44 A.Methanol          PuD0 I.Pkbr1.Z4 1.90e-05 0.000394 0.000717
-## 196 PyrT54      B.5mM         PreD1 I.Pkbr1.Z4 3.63e-05 0.000786 0.001430
-## 197 PyrT55      B.5mM         PreD1 I.Pkbr1.Z4 6.05e-05 0.002350 0.003510
-## 198 PyrT56      B.5mM         PreD1 I.Pkbr1.Z4 3.63e-05 0.001280 0.002580
-## 199 PyrT57      B.5mM         PreD1 I.Pkbr1.Z4 7.41e-05 0.001690 0.003140
-## 200 PyrT61      B.5mM         PreD1 I.Pkbr1.Z4 3.17e-05 0.002080 0.002640
-## 201 PyrT62      B.5mM         PreD1 I.Pkbr1.Z4 4.69e-05 0.005070 0.003120
-## 202 PyrT52      B.5mM          PuD0 I.Pkbr1.Z4 2.15e-05 0.007550 0.001940
-## 203 PyrT58      B.5mM          PuD0 I.Pkbr1.Z4 1.84e-05 0.000361 0.002640
-## 204 PyrT59      B.5mM          PuD0 I.Pkbr1.Z4 1.32e-05 0.001370 0.002130
-## 205 PyrT60      B.5mM          PuD0 I.Pkbr1.Z4 8.71e-06 0.001480 0.002030
-## 206 PyrT63      B.5mM          PuD0 I.Pkbr1.Z4 2.24e-05 0.001020 0.001820
-## 207 PyrT64      B.5mM          PuD0 I.Pkbr1.Z4 1.48e-05 0.000464 0.000970
+<pre><code>##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 185 PyrT21 A.Methanol         PreD1 I.Pkbr1.Z4 7.82e-05 0.002420
+## 186 PyrT11 A.Methanol         PreD1 I.Pkbr1.Z4 7.51e-05 0.004680
+## 187 PyrT19 A.Methanol         PreD1 I.Pkbr1.Z4 6.70e-05 0.002680
+## 188 PyrT20 A.Methanol         PreD1 I.Pkbr1.Z4 7.87e-05 0.004500
+## 189 PyrT30 A.Methanol         PreD1 I.Pkbr1.Z4 6.26e-05 0.003430
+## 190 PyrT37 A.Methanol         PreD1 I.Pkbr1.Z4 1.14e-04 0.005150
+## 191 PyrT27 A.Methanol          PuD0 I.Pkbr1.Z4 2.06e-05 0.000534
+## 192 PyrT34 A.Methanol          PuD0 I.Pkbr1.Z4 4.29e-05 0.001380
+## 193 PyrT35 A.Methanol          PuD0 I.Pkbr1.Z4 4.24e-05 0.000939
+## 194 PyrT36 A.Methanol          PuD0 I.Pkbr1.Z4 3.33e-05 0.001220
+## 195 PyrT44 A.Methanol          PuD0 I.Pkbr1.Z4 1.90e-05 0.000717
+## 196 PyrT54      B.5mM         PreD1 I.Pkbr1.Z4 3.63e-05 0.001430
+## 197 PyrT55      B.5mM         PreD1 I.Pkbr1.Z4 6.05e-05 0.003510
+## 198 PyrT56      B.5mM         PreD1 I.Pkbr1.Z4 3.63e-05 0.002580
+## 199 PyrT57      B.5mM         PreD1 I.Pkbr1.Z4 7.41e-05 0.003140
+## 200 PyrT61      B.5mM         PreD1 I.Pkbr1.Z4 3.17e-05 0.002640
+## 201 PyrT62      B.5mM         PreD1 I.Pkbr1.Z4 4.69e-05 0.003120
+## 202 PyrT52      B.5mM          PuD0 I.Pkbr1.Z4 2.15e-05 0.001940
+## 203 PyrT58      B.5mM          PuD0 I.Pkbr1.Z4 1.84e-05 0.002640
+## 204 PyrT59      B.5mM          PuD0 I.Pkbr1.Z4 1.32e-05 0.002130
+## 205 PyrT60      B.5mM          PuD0 I.Pkbr1.Z4 8.71e-06 0.002030
+## 206 PyrT63      B.5mM          PuD0 I.Pkbr1.Z4 2.24e-05 0.001820
+## 207 PyrT64      B.5mM          PuD0 I.Pkbr1.Z4 1.48e-05 0.000970
 ##     gene.normal
 ## 185 0.032314050
 ## 186 0.016047009
@@ -1004,54 +907,30 @@ dev.off()</code></pre>
 <pre class="r"><code>#boxplot
 Pkbr3box&lt;-subset(dataB, Gene==&quot;M.Pkbr3&quot;)
 Pkbr3box</code></pre>
-<pre><code>##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.1   rp49.2
-## 139 PyrT21 A.Methanol         PreD1 M.Pkbr3 3.08e-04 0.001770 0.002420
-## 140 PyrT11 A.Methanol         PreD1 M.Pkbr3 3.36e-04 0.004210 0.004680
-## 141 PyrT19 A.Methanol         PreD1 M.Pkbr3 3.52e-04 0.002010 0.002680
-## 142 PyrT20 A.Methanol         PreD1 M.Pkbr3 5.97e-04 0.005270 0.004500
-## 143 PyrT30 A.Methanol         PreD1 M.Pkbr3 5.73e-04 0.003630 0.003430
-## 144 PyrT37 A.Methanol         PreD1 M.Pkbr3 6.05e-04 0.005320 0.005150
-## 145 PyrT27 A.Methanol          PuD0 M.Pkbr3 1.41e-04 0.000354 0.000534
-## 146 PyrT34 A.Methanol          PuD0 M.Pkbr3 2.43e-04 0.001180 0.001380
-## 147 PyrT35 A.Methanol          PuD0 M.Pkbr3 1.63e-04 0.001390 0.000939
-## 148 PyrT36 A.Methanol          PuD0 M.Pkbr3 1.39e-04 0.000917 0.001220
-## 149 PyrT44 A.Methanol          PuD0 M.Pkbr3 6.93e-05 0.000394 0.000717
-## 150 PyrT54      B.5mM         PreD1 M.Pkbr3 3.89e-04 0.000786 0.001430
-## 151 PyrT55      B.5mM         PreD1 M.Pkbr3 6.09e-04 0.002350 0.003510
-## 152 PyrT56      B.5mM         PreD1 M.Pkbr3 5.26e-04 0.001280 0.002580
-## 153 PyrT57      B.5mM         PreD1 M.Pkbr3 6.86e-04 0.001690 0.003140
-## 154 PyrT61      B.5mM         PreD1 M.Pkbr3 5.93e-04 0.002080 0.002640
-## 155 PyrT62      B.5mM         PreD1 M.Pkbr3 8.11e-04 0.005070 0.003120
-## 156 PyrT52      B.5mM          PuD0 M.Pkbr3 3.45e-04 0.007550 0.001940
-## 157 PyrT58      B.5mM          PuD0 M.Pkbr3 3.95e-04 0.000361 0.002640
-## 158 PyrT59      B.5mM          PuD0 M.Pkbr3 3.11e-04 0.001370 0.002130
-## 159 PyrT60      B.5mM          PuD0 M.Pkbr3 2.83e-04 0.001480 0.002030
-## 160 PyrT63      B.5mM          PuD0 M.Pkbr3 3.55e-04 0.001020 0.001820
-## 161 PyrT64      B.5mM          PuD0 M.Pkbr3 1.86e-04 0.000464 0.000970
-##     gene.normal
-## 139  0.12727273
-## 140  0.07179487
-## 141  0.13134328
-## 142  0.13266667
-## 143  0.16705539
-## 144  0.11747573
-## 145  0.26404494
-## 146  0.17608696
-## 147  0.17358892
-## 148  0.11393443
-## 149  0.09665272
-## 150  0.27202797
-## 151  0.17350427
-## 152  0.20387597
-## 153  0.21847134
-## 154  0.22462121
-## 155  0.25993590
-## 156  0.17783505
-## 157  0.14962121
-## 158  0.14600939
-## 159  0.13940887
-## 160  0.19505495
-## 161  0.19175258</code></pre>
+<pre><code>##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.2 gene.normal
+## 139 PyrT21 A.Methanol         PreD1 M.Pkbr3 3.08e-04 0.002420  0.12727273
+## 140 PyrT11 A.Methanol         PreD1 M.Pkbr3 3.36e-04 0.004680  0.07179487
+## 141 PyrT19 A.Methanol         PreD1 M.Pkbr3 3.52e-04 0.002680  0.13134328
+## 142 PyrT20 A.Methanol         PreD1 M.Pkbr3 5.97e-04 0.004500  0.13266667
+## 143 PyrT30 A.Methanol         PreD1 M.Pkbr3 5.73e-04 0.003430  0.16705539
+## 144 PyrT37 A.Methanol         PreD1 M.Pkbr3 6.05e-04 0.005150  0.11747573
+## 145 PyrT27 A.Methanol          PuD0 M.Pkbr3 1.41e-04 0.000534  0.26404494
+## 146 PyrT34 A.Methanol          PuD0 M.Pkbr3 2.43e-04 0.001380  0.17608696
+## 147 PyrT35 A.Methanol          PuD0 M.Pkbr3 1.63e-04 0.000939  0.17358892
+## 148 PyrT36 A.Methanol          PuD0 M.Pkbr3 1.39e-04 0.001220  0.11393443
+## 149 PyrT44 A.Methanol          PuD0 M.Pkbr3 6.93e-05 0.000717  0.09665272
+## 150 PyrT54      B.5mM         PreD1 M.Pkbr3 3.89e-04 0.001430  0.27202797
+## 151 PyrT55      B.5mM         PreD1 M.Pkbr3 6.09e-04 0.003510  0.17350427
+## 152 PyrT56      B.5mM         PreD1 M.Pkbr3 5.26e-04 0.002580  0.20387597
+## 153 PyrT57      B.5mM         PreD1 M.Pkbr3 6.86e-04 0.003140  0.21847134
+## 154 PyrT61      B.5mM         PreD1 M.Pkbr3 5.93e-04 0.002640  0.22462121
+## 155 PyrT62      B.5mM         PreD1 M.Pkbr3 8.11e-04 0.003120  0.25993590
+## 156 PyrT52      B.5mM          PuD0 M.Pkbr3 3.45e-04 0.001940  0.17783505
+## 157 PyrT58      B.5mM          PuD0 M.Pkbr3 3.95e-04 0.002640  0.14962121
+## 158 PyrT59      B.5mM          PuD0 M.Pkbr3 3.11e-04 0.002130  0.14600939
+## 159 PyrT60      B.5mM          PuD0 M.Pkbr3 2.83e-04 0.002030  0.13940887
+## 160 PyrT63      B.5mM          PuD0 M.Pkbr3 3.55e-04 0.001820  0.19505495
+## 161 PyrT64      B.5mM          PuD0 M.Pkbr3 1.86e-04 0.000970  0.19175258</code></pre>
 <pre class="r"><code>Pkbr3box&lt;-select(Pkbr3box, gene.normal,Stage.treated, Treatment)
 br3box&lt;-ggplot(data = Pkbr3box, aes(x = Stage.treated, y = gene.normal)) + 
   geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
@@ -1075,30 +954,30 @@ dev.off()</code></pre>
 <pre class="r"><code>#boxplot
 Pkbr3Z2box&lt;-subset(dataB, Gene==&quot;N.Pkbr3.Z2&quot;)
 Pkbr3Z2box</code></pre>
-<pre><code>##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 254 PyrT21 A.Methanol         PreD1 N.Pkbr3.Z2 1.66e-04 0.001770 0.002420
-## 255 PyrT11 A.Methanol         PreD1 N.Pkbr3.Z2 1.66e-04 0.004210 0.004680
-## 256 PyrT19 A.Methanol         PreD1 N.Pkbr3.Z2 1.90e-04 0.002010 0.002680
-## 257 PyrT20 A.Methanol         PreD1 N.Pkbr3.Z2 2.77e-04 0.005270 0.004500
-## 258 PyrT30 A.Methanol         PreD1 N.Pkbr3.Z2 2.81e-04 0.003630 0.003430
-## 259 PyrT37 A.Methanol         PreD1 N.Pkbr3.Z2 3.83e-04 0.005320 0.005150
-## 260 PyrT27 A.Methanol          PuD0 N.Pkbr3.Z2 6.10e-05 0.000354 0.000534
-## 261 PyrT34 A.Methanol          PuD0 N.Pkbr3.Z2 1.09e-04 0.001180 0.001380
-## 262 PyrT35 A.Methanol          PuD0 N.Pkbr3.Z2 9.62e-05 0.001390 0.000939
-## 263 PyrT36 A.Methanol          PuD0 N.Pkbr3.Z2 7.10e-05 0.000917 0.001220
-## 264 PyrT44 A.Methanol          PuD0 N.Pkbr3.Z2 3.41e-05 0.000394 0.000717
-## 265 PyrT54      B.5mM         PreD1 N.Pkbr3.Z2 1.94e-04 0.000786 0.001430
-## 266 PyrT55      B.5mM         PreD1 N.Pkbr3.Z2 3.02e-04 0.002350 0.003510
-## 267 PyrT56      B.5mM         PreD1 N.Pkbr3.Z2 2.33e-04 0.001280 0.002580
-## 268 PyrT57      B.5mM         PreD1 N.Pkbr3.Z2 3.59e-04 0.001690 0.003140
-## 269 PyrT61      B.5mM         PreD1 N.Pkbr3.Z2 3.34e-04 0.002080 0.002640
-## 270 PyrT62      B.5mM         PreD1 N.Pkbr3.Z2 4.55e-04 0.005070 0.003120
-## 271 PyrT52      B.5mM          PuD0 N.Pkbr3.Z2 1.93e-04 0.007550 0.001940
-## 272 PyrT58      B.5mM          PuD0 N.Pkbr3.Z2 1.89e-04 0.000361 0.002640
-## 273 PyrT59      B.5mM          PuD0 N.Pkbr3.Z2 1.67e-04 0.001370 0.002130
-## 274 PyrT60      B.5mM          PuD0 N.Pkbr3.Z2 1.42e-04 0.001480 0.002030
-## 275 PyrT63      B.5mM          PuD0 N.Pkbr3.Z2 2.16e-04 0.001020 0.001820
-## 276 PyrT64      B.5mM          PuD0 N.Pkbr3.Z2 1.00e-04 0.000464 0.000970
+<pre><code>##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 254 PyrT21 A.Methanol         PreD1 N.Pkbr3.Z2 1.66e-04 0.002420
+## 255 PyrT11 A.Methanol         PreD1 N.Pkbr3.Z2 1.66e-04 0.004680
+## 256 PyrT19 A.Methanol         PreD1 N.Pkbr3.Z2 1.90e-04 0.002680
+## 257 PyrT20 A.Methanol         PreD1 N.Pkbr3.Z2 2.77e-04 0.004500
+## 258 PyrT30 A.Methanol         PreD1 N.Pkbr3.Z2 2.81e-04 0.003430
+## 259 PyrT37 A.Methanol         PreD1 N.Pkbr3.Z2 3.83e-04 0.005150
+## 260 PyrT27 A.Methanol          PuD0 N.Pkbr3.Z2 6.10e-05 0.000534
+## 261 PyrT34 A.Methanol          PuD0 N.Pkbr3.Z2 1.09e-04 0.001380
+## 262 PyrT35 A.Methanol          PuD0 N.Pkbr3.Z2 9.62e-05 0.000939
+## 263 PyrT36 A.Methanol          PuD0 N.Pkbr3.Z2 7.10e-05 0.001220
+## 264 PyrT44 A.Methanol          PuD0 N.Pkbr3.Z2 3.41e-05 0.000717
+## 265 PyrT54      B.5mM         PreD1 N.Pkbr3.Z2 1.94e-04 0.001430
+## 266 PyrT55      B.5mM         PreD1 N.Pkbr3.Z2 3.02e-04 0.003510
+## 267 PyrT56      B.5mM         PreD1 N.Pkbr3.Z2 2.33e-04 0.002580
+## 268 PyrT57      B.5mM         PreD1 N.Pkbr3.Z2 3.59e-04 0.003140
+## 269 PyrT61      B.5mM         PreD1 N.Pkbr3.Z2 3.34e-04 0.002640
+## 270 PyrT62      B.5mM         PreD1 N.Pkbr3.Z2 4.55e-04 0.003120
+## 271 PyrT52      B.5mM          PuD0 N.Pkbr3.Z2 1.93e-04 0.001940
+## 272 PyrT58      B.5mM          PuD0 N.Pkbr3.Z2 1.89e-04 0.002640
+## 273 PyrT59      B.5mM          PuD0 N.Pkbr3.Z2 1.67e-04 0.002130
+## 274 PyrT60      B.5mM          PuD0 N.Pkbr3.Z2 1.42e-04 0.002030
+## 275 PyrT63      B.5mM          PuD0 N.Pkbr3.Z2 2.16e-04 0.001820
+## 276 PyrT64      B.5mM          PuD0 N.Pkbr3.Z2 1.00e-04 0.000970
 ##     gene.normal
 ## 254  0.06859504
 ## 255  0.03547009
@@ -1144,54 +1023,30 @@ dev.off()</code></pre>
 <pre class="r"><code>#boxplot
 Pkbr2box&lt;-subset(dataB, Gene==&quot;J.Pkbr2&quot;)
 Pkbr2box</code></pre>
-<pre><code>##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.1   rp49.2
-## 116 PyrT21 A.Methanol         PreD1 J.Pkbr2 2.25e-05 0.001770 0.002420
-## 117 PyrT11 A.Methanol         PreD1 J.Pkbr2 2.51e-05 0.004210 0.004680
-## 118 PyrT19 A.Methanol         PreD1 J.Pkbr2 9.13e-06 0.002010 0.002680
-## 119 PyrT20 A.Methanol         PreD1 J.Pkbr2 3.35e-05 0.005270 0.004500
-## 120 PyrT30 A.Methanol         PreD1 J.Pkbr2 2.64e-05 0.003630 0.003430
-## 121 PyrT37 A.Methanol         PreD1 J.Pkbr2 4.41e-05 0.005320 0.005150
-## 122 PyrT27 A.Methanol          PuD0 J.Pkbr2 1.19e-05 0.000354 0.000534
-## 123 PyrT34 A.Methanol          PuD0 J.Pkbr2 1.80e-05 0.001180 0.001380
-## 124 PyrT35 A.Methanol          PuD0 J.Pkbr2 2.13e-05 0.001390 0.000939
-## 125 PyrT36 A.Methanol          PuD0 J.Pkbr2 1.44e-05 0.000917 0.001220
-## 126 PyrT44 A.Methanol          PuD0 J.Pkbr2 7.42e-06 0.000394 0.000717
-## 127 PyrT54      B.5mM         PreD1 J.Pkbr2 1.11e-05 0.000786 0.001430
-## 128 PyrT55      B.5mM         PreD1 J.Pkbr2 1.44e-05 0.002350 0.003510
-## 129 PyrT56      B.5mM         PreD1 J.Pkbr2 1.76e-05 0.001280 0.002580
-## 130 PyrT57      B.5mM         PreD1 J.Pkbr2 2.27e-05 0.001690 0.003140
-## 131 PyrT61      B.5mM         PreD1 J.Pkbr2 2.01e-05 0.002080 0.002640
-## 132 PyrT62      B.5mM         PreD1 J.Pkbr2 3.01e-05 0.005070 0.003120
-## 133 PyrT52      B.5mM          PuD0 J.Pkbr2 1.71e-05 0.007550 0.001940
-## 134 PyrT58      B.5mM          PuD0 J.Pkbr2 2.14e-05 0.000361 0.002640
-## 135 PyrT59      B.5mM          PuD0 J.Pkbr2 1.94e-05 0.001370 0.002130
-## 136 PyrT60      B.5mM          PuD0 J.Pkbr2 1.62e-05 0.001480 0.002030
-## 137 PyrT63      B.5mM          PuD0 J.Pkbr2 1.99e-05 0.001020 0.001820
-## 138 PyrT64      B.5mM          PuD0 J.Pkbr2 1.37e-05 0.000464 0.000970
-##     gene.normal
-## 116 0.009297521
-## 117 0.005363248
-## 118 0.003406716
-## 119 0.007444444
-## 120 0.007696793
-## 121 0.008563107
-## 122 0.022284644
-## 123 0.013043478
-## 124 0.022683706
-## 125 0.011803279
-## 126 0.010348675
-## 127 0.007762238
-## 128 0.004102564
-## 129 0.006821705
-## 130 0.007229299
-## 131 0.007613636
-## 132 0.009647436
-## 133 0.008814433
-## 134 0.008106061
-## 135 0.009107981
-## 136 0.007980296
-## 137 0.010934066
-## 138 0.014123711</code></pre>
+<pre><code>##     Sample  Treatment Stage.treated    Gene SDM.gene   rp49.2 gene.normal
+## 116 PyrT21 A.Methanol         PreD1 J.Pkbr2 2.25e-05 0.002420 0.009297521
+## 117 PyrT11 A.Methanol         PreD1 J.Pkbr2 2.51e-05 0.004680 0.005363248
+## 118 PyrT19 A.Methanol         PreD1 J.Pkbr2 9.13e-06 0.002680 0.003406716
+## 119 PyrT20 A.Methanol         PreD1 J.Pkbr2 3.35e-05 0.004500 0.007444444
+## 120 PyrT30 A.Methanol         PreD1 J.Pkbr2 2.64e-05 0.003430 0.007696793
+## 121 PyrT37 A.Methanol         PreD1 J.Pkbr2 4.41e-05 0.005150 0.008563107
+## 122 PyrT27 A.Methanol          PuD0 J.Pkbr2 1.19e-05 0.000534 0.022284644
+## 123 PyrT34 A.Methanol          PuD0 J.Pkbr2 1.80e-05 0.001380 0.013043478
+## 124 PyrT35 A.Methanol          PuD0 J.Pkbr2 2.13e-05 0.000939 0.022683706
+## 125 PyrT36 A.Methanol          PuD0 J.Pkbr2 1.44e-05 0.001220 0.011803279
+## 126 PyrT44 A.Methanol          PuD0 J.Pkbr2 7.42e-06 0.000717 0.010348675
+## 127 PyrT54      B.5mM         PreD1 J.Pkbr2 1.11e-05 0.001430 0.007762238
+## 128 PyrT55      B.5mM         PreD1 J.Pkbr2 1.44e-05 0.003510 0.004102564
+## 129 PyrT56      B.5mM         PreD1 J.Pkbr2 1.76e-05 0.002580 0.006821705
+## 130 PyrT57      B.5mM         PreD1 J.Pkbr2 2.27e-05 0.003140 0.007229299
+## 131 PyrT61      B.5mM         PreD1 J.Pkbr2 2.01e-05 0.002640 0.007613636
+## 132 PyrT62      B.5mM         PreD1 J.Pkbr2 3.01e-05 0.003120 0.009647436
+## 133 PyrT52      B.5mM          PuD0 J.Pkbr2 1.71e-05 0.001940 0.008814433
+## 134 PyrT58      B.5mM          PuD0 J.Pkbr2 2.14e-05 0.002640 0.008106061
+## 135 PyrT59      B.5mM          PuD0 J.Pkbr2 1.94e-05 0.002130 0.009107981
+## 136 PyrT60      B.5mM          PuD0 J.Pkbr2 1.62e-05 0.002030 0.007980296
+## 137 PyrT63      B.5mM          PuD0 J.Pkbr2 1.99e-05 0.001820 0.010934066
+## 138 PyrT64      B.5mM          PuD0 J.Pkbr2 1.37e-05 0.000970 0.014123711</code></pre>
 <pre class="r"><code>Pkbr2box&lt;-select(Pkbr2box, gene.normal,Stage.treated, Treatment)
 br2box&lt;-ggplot(data = Pkbr2box, aes(x = Stage.treated, y = gene.normal)) + 
   geom_boxplot(aes(fill = Treatment), width = 0.8, size=1) + 
@@ -1211,30 +1066,30 @@ dev.off()</code></pre>
 <pre class="r"><code>#boxplot
 Pkbr2Z2box&lt;-subset(dataB, Gene==&quot;K.Pkbr2.Z2&quot;)
 Pkbr2Z2box</code></pre>
-<pre><code>##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 208 PyrT21 A.Methanol         PreD1 K.Pkbr2.Z2 4.69e-05 0.001770 0.002420
-## 209 PyrT11 A.Methanol         PreD1 K.Pkbr2.Z2 3.40e-05 0.004210 0.004680
-## 210 PyrT19 A.Methanol         PreD1 K.Pkbr2.Z2 1.49e-05 0.002010 0.002680
-## 211 PyrT20 A.Methanol         PreD1 K.Pkbr2.Z2 4.38e-05 0.005270 0.004500
-## 212 PyrT30 A.Methanol         PreD1 K.Pkbr2.Z2 3.48e-05 0.003630 0.003430
-## 213 PyrT37 A.Methanol         PreD1 K.Pkbr2.Z2 4.94e-05 0.005320 0.005150
-## 214 PyrT27 A.Methanol          PuD0 K.Pkbr2.Z2 2.09e-05 0.000354 0.000534
-## 215 PyrT34 A.Methanol          PuD0 K.Pkbr2.Z2 2.12e-05 0.001180 0.001380
-## 216 PyrT35 A.Methanol          PuD0 K.Pkbr2.Z2 2.48e-05 0.001390 0.000939
-## 217 PyrT36 A.Methanol          PuD0 K.Pkbr2.Z2 2.09e-05 0.000917 0.001220
-## 218 PyrT44 A.Methanol          PuD0 K.Pkbr2.Z2 1.13e-05 0.000394 0.000717
-## 219 PyrT54      B.5mM         PreD1 K.Pkbr2.Z2 1.80e-05 0.000786 0.001430
-## 220 PyrT55      B.5mM         PreD1 K.Pkbr2.Z2 1.73e-05 0.002350 0.003510
-## 221 PyrT56      B.5mM         PreD1 K.Pkbr2.Z2 1.75e-05 0.001280 0.002580
-## 222 PyrT57      B.5mM         PreD1 K.Pkbr2.Z2 2.88e-05 0.001690 0.003140
-## 223 PyrT61      B.5mM         PreD1 K.Pkbr2.Z2 2.60e-05 0.002080 0.002640
-## 224 PyrT62      B.5mM         PreD1 K.Pkbr2.Z2 3.61e-05 0.005070 0.003120
-## 225 PyrT52      B.5mM          PuD0 K.Pkbr2.Z2 2.04e-05 0.007550 0.001940
-## 226 PyrT58      B.5mM          PuD0 K.Pkbr2.Z2 3.13e-05 0.000361 0.002640
-## 227 PyrT59      B.5mM          PuD0 K.Pkbr2.Z2 2.27e-05 0.001370 0.002130
-## 228 PyrT60      B.5mM          PuD0 K.Pkbr2.Z2 1.87e-05 0.001480 0.002030
-## 229 PyrT63      B.5mM          PuD0 K.Pkbr2.Z2 2.32e-05 0.001020 0.001820
-## 230 PyrT64      B.5mM          PuD0 K.Pkbr2.Z2 1.44e-05 0.000464 0.000970
+<pre><code>##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 208 PyrT21 A.Methanol         PreD1 K.Pkbr2.Z2 4.69e-05 0.002420
+## 209 PyrT11 A.Methanol         PreD1 K.Pkbr2.Z2 3.40e-05 0.004680
+## 210 PyrT19 A.Methanol         PreD1 K.Pkbr2.Z2 1.49e-05 0.002680
+## 211 PyrT20 A.Methanol         PreD1 K.Pkbr2.Z2 4.38e-05 0.004500
+## 212 PyrT30 A.Methanol         PreD1 K.Pkbr2.Z2 3.48e-05 0.003430
+## 213 PyrT37 A.Methanol         PreD1 K.Pkbr2.Z2 4.94e-05 0.005150
+## 214 PyrT27 A.Methanol          PuD0 K.Pkbr2.Z2 2.09e-05 0.000534
+## 215 PyrT34 A.Methanol          PuD0 K.Pkbr2.Z2 2.12e-05 0.001380
+## 216 PyrT35 A.Methanol          PuD0 K.Pkbr2.Z2 2.48e-05 0.000939
+## 217 PyrT36 A.Methanol          PuD0 K.Pkbr2.Z2 2.09e-05 0.001220
+## 218 PyrT44 A.Methanol          PuD0 K.Pkbr2.Z2 1.13e-05 0.000717
+## 219 PyrT54      B.5mM         PreD1 K.Pkbr2.Z2 1.80e-05 0.001430
+## 220 PyrT55      B.5mM         PreD1 K.Pkbr2.Z2 1.73e-05 0.003510
+## 221 PyrT56      B.5mM         PreD1 K.Pkbr2.Z2 1.75e-05 0.002580
+## 222 PyrT57      B.5mM         PreD1 K.Pkbr2.Z2 2.88e-05 0.003140
+## 223 PyrT61      B.5mM         PreD1 K.Pkbr2.Z2 2.60e-05 0.002640
+## 224 PyrT62      B.5mM         PreD1 K.Pkbr2.Z2 3.61e-05 0.003120
+## 225 PyrT52      B.5mM          PuD0 K.Pkbr2.Z2 2.04e-05 0.001940
+## 226 PyrT58      B.5mM          PuD0 K.Pkbr2.Z2 3.13e-05 0.002640
+## 227 PyrT59      B.5mM          PuD0 K.Pkbr2.Z2 2.27e-05 0.002130
+## 228 PyrT60      B.5mM          PuD0 K.Pkbr2.Z2 1.87e-05 0.002030
+## 229 PyrT63      B.5mM          PuD0 K.Pkbr2.Z2 2.32e-05 0.001820
+## 230 PyrT64      B.5mM          PuD0 K.Pkbr2.Z2 1.44e-05 0.000970
 ##     gene.normal
 ## 208 0.019380165
 ## 209 0.007264957
@@ -1278,30 +1133,30 @@ dev.off()</code></pre>
 <pre class="r"><code>#boxplot
 Pkbr2Z4box&lt;-subset(dataB, Gene==&quot;L.Pkbr2.Z4&quot;)
 Pkbr2Z4box</code></pre>
-<pre><code>##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.1   rp49.2
-## 231 PyrT21 A.Methanol         PreD1 L.Pkbr2.Z4 3.59e-05 0.001770 0.002420
-## 232 PyrT11 A.Methanol         PreD1 L.Pkbr2.Z4 3.09e-05 0.004210 0.004680
-## 233 PyrT19 A.Methanol         PreD1 L.Pkbr2.Z4 1.73e-05 0.002010 0.002680
-## 234 PyrT20 A.Methanol         PreD1 L.Pkbr2.Z4 5.00e-05 0.005270 0.004500
-## 235 PyrT30 A.Methanol         PreD1 L.Pkbr2.Z4 4.83e-05 0.003630 0.003430
-## 236 PyrT37 A.Methanol         PreD1 L.Pkbr2.Z4 5.40e-05 0.005320 0.005150
-## 237 PyrT27 A.Methanol          PuD0 L.Pkbr2.Z4 2.61e-05 0.000354 0.000534
-## 238 PyrT34 A.Methanol          PuD0 L.Pkbr2.Z4 3.05e-05 0.001180 0.001380
-## 239 PyrT35 A.Methanol          PuD0 L.Pkbr2.Z4 3.32e-05 0.001390 0.000939
-## 240 PyrT36 A.Methanol          PuD0 L.Pkbr2.Z4 3.03e-05 0.000917 0.001220
-## 241 PyrT44 A.Methanol          PuD0 L.Pkbr2.Z4 1.58e-05 0.000394 0.000717
-## 242 PyrT54      B.5mM         PreD1 L.Pkbr2.Z4 1.67e-05 0.000786 0.001430
-## 243 PyrT55      B.5mM         PreD1 L.Pkbr2.Z4 2.28e-05 0.002350 0.003510
-## 244 PyrT56      B.5mM         PreD1 L.Pkbr2.Z4 2.11e-05 0.001280 0.002580
-## 245 PyrT57      B.5mM         PreD1 L.Pkbr2.Z4 3.79e-05 0.001690 0.003140
-## 246 PyrT61      B.5mM         PreD1 L.Pkbr2.Z4 2.88e-05 0.002080 0.002640
-## 247 PyrT62      B.5mM         PreD1 L.Pkbr2.Z4 5.37e-05 0.005070 0.003120
-## 248 PyrT52      B.5mM          PuD0 L.Pkbr2.Z4 2.96e-05 0.007550 0.001940
-## 249 PyrT58      B.5mM          PuD0 L.Pkbr2.Z4 3.85e-05 0.000361 0.002640
-## 250 PyrT59      B.5mM          PuD0 L.Pkbr2.Z4 3.32e-05 0.001370 0.002130
-## 251 PyrT60      B.5mM          PuD0 L.Pkbr2.Z4 2.57e-05 0.001480 0.002030
-## 252 PyrT63      B.5mM          PuD0 L.Pkbr2.Z4 3.22e-05 0.001020 0.001820
-## 253 PyrT64      B.5mM          PuD0 L.Pkbr2.Z4 1.88e-05 0.000464 0.000970
+<pre><code>##     Sample  Treatment Stage.treated       Gene SDM.gene   rp49.2
+## 231 PyrT21 A.Methanol         PreD1 L.Pkbr2.Z4 3.59e-05 0.002420
+## 232 PyrT11 A.Methanol         PreD1 L.Pkbr2.Z4 3.09e-05 0.004680
+## 233 PyrT19 A.Methanol         PreD1 L.Pkbr2.Z4 1.73e-05 0.002680
+## 234 PyrT20 A.Methanol         PreD1 L.Pkbr2.Z4 5.00e-05 0.004500
+## 235 PyrT30 A.Methanol         PreD1 L.Pkbr2.Z4 4.83e-05 0.003430
+## 236 PyrT37 A.Methanol         PreD1 L.Pkbr2.Z4 5.40e-05 0.005150
+## 237 PyrT27 A.Methanol          PuD0 L.Pkbr2.Z4 2.61e-05 0.000534
+## 238 PyrT34 A.Methanol          PuD0 L.Pkbr2.Z4 3.05e-05 0.001380
+## 239 PyrT35 A.Methanol          PuD0 L.Pkbr2.Z4 3.32e-05 0.000939
+## 240 PyrT36 A.Methanol          PuD0 L.Pkbr2.Z4 3.03e-05 0.001220
+## 241 PyrT44 A.Methanol          PuD0 L.Pkbr2.Z4 1.58e-05 0.000717
+## 242 PyrT54      B.5mM         PreD1 L.Pkbr2.Z4 1.67e-05 0.001430
+## 243 PyrT55      B.5mM         PreD1 L.Pkbr2.Z4 2.28e-05 0.003510
+## 244 PyrT56      B.5mM         PreD1 L.Pkbr2.Z4 2.11e-05 0.002580
+## 245 PyrT57      B.5mM         PreD1 L.Pkbr2.Z4 3.79e-05 0.003140
+## 246 PyrT61      B.5mM         PreD1 L.Pkbr2.Z4 2.88e-05 0.002640
+## 247 PyrT62      B.5mM         PreD1 L.Pkbr2.Z4 5.37e-05 0.003120
+## 248 PyrT52      B.5mM          PuD0 L.Pkbr2.Z4 2.96e-05 0.001940
+## 249 PyrT58      B.5mM          PuD0 L.Pkbr2.Z4 3.85e-05 0.002640
+## 250 PyrT59      B.5mM          PuD0 L.Pkbr2.Z4 3.32e-05 0.002130
+## 251 PyrT60      B.5mM          PuD0 L.Pkbr2.Z4 2.57e-05 0.002030
+## 252 PyrT63      B.5mM          PuD0 L.Pkbr2.Z4 3.22e-05 0.001820
+## 253 PyrT64      B.5mM          PuD0 L.Pkbr2.Z4 1.88e-05 0.000970
 ##     gene.normal
 ## 231 0.014834711
 ## 232 0.006602564
@@ -1565,7 +1420,7 @@ t.test(gene.normal~Treatment,data=pupatestPkbr3z2)</code></pre>
 <h2>Figure Taiman 5A and B and INDEL</h2>
 <pre class="r"><code>FigureSTai&lt;-subset(dataA3,Gene==&quot;SDM.Tai.IN&quot;|Gene==&quot;SDM.Tai.DEL&quot;)
 
-pFigSTai&lt;-ggplot(FigureSTai, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFigSTai&lt;-ggplot(FigureSTai, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
   geom_point(aes(linetype=Sex),size=2)+
   geom_line(aes(linetype=Sex),size=0.5)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = &quot;black&quot;))+
@@ -1577,7 +1432,7 @@ pFigSTai+facet_grid(Gene~.,scales=&quot;free&quot;)</code></pre>
 <p><img src="data:image/png;base64,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AkJACHQUATGgHYVbjQkBISAEhIAQEAJCQAjICUnfgBAoCIFPP/3UXX311Q7v0UGDBrlpp522oJpVjRAQAkJACAiB/oWAGND+9T71NH2EwN/+9je3+OKLuw8//DD04Oijj3Z4pi600EJ91CM1KwSEgBAQAkKgexGQCr5734161kMIHHnkkWXmk27/3//9n9t///176AnUVSEgBISAEBACnUNADGjnsFZL/RiBMWPGVD1d2rmqQjohBISAEBACQmAAIiAGdAC+dD1y8QisttpqVZWuuuqqVed0QggIASEgBISAEFAYJn0DQqAQBPbZZx+3zTbblOtac8013UknnVQ+1o4QEAJCQAgIASHwXwQkAf0vFtoTArkRIEXpkCFDguf7hBNO6O688073k5/8JHd9ulEICAEhIASEQH9GQAxof367eraOI/D//t//c99++6374YcfOt62GhQCQkAICAEh0CsIiAHtlTelfvYEAp9//nno5//+7//2RH/VSSEgBISAEBACfYGAGNC+QF1t9ksEYDq///778GyEYRIJASEgBISAEBAC6QiIAU3HRWeFQNMI/POf/yzfIwa0DIV2hIAQEAJCQAhUISAGtAoSnRAC+RCI1e7YgoqEgBAQAkJACAiBdATEgKbjorNCoGkEJAFtGjLdIASEgBAQAgMUATGgA/TF67GLR0AMaPGYqkYhIASEgBDonwiM3z8fq/inKpVK7l//+lchFROip6i6CulQhkp4foh+jzPOOBnu6J4incL7H//4R/mhUce38o4N7++++054l1Ft347wbh+2aTUL7zRU8p/D+dEwzV+L7hQCnUVADGhn8VZr/RiBzz77zI0//vhu3HHHdbIB7ccvWo8mBISAEBACLSMgBjQjhEj9yHZTBMGgFFVXEf3JUgdSRKRx9LvXJKCdwhvP9ymmmCKEYvryyy9beseGtzG0Wd5Rt5TpFN5FPq/wLhLNxnUJ78YYNVNivPHG67lxuZnnU9n+iYAY0P75XvVUfYAANqA//elPg+pdYZj64AWoSSEgBISAEOgZBMSA9syrUke7HQEY0J/97Gfuq6++cmJAu/1tqX9CQAgIASHQlwiIAe1L9NV2v0IAxyMkoJgpyAa0X71aPYwQEAJCQAgUjIDCMBUMqKobuAiYCv5//ud/JAEduJ+BnlwICAEhIAQyICAGNANIKiIEsiBg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kku6U089tRwTN3TI/5MTkiGhrRAQAp1G4JVXXnEwnGRDYtyD6cTWE6azCDv4Tj+P2utfCPQsAwqzkcejPu99/eu19/7TEAd0p512cksvvXT5YQj1RYimWip4CqKGL5IBNRX8Qgst5Pgzuu+++xyhT1DBk64zTthgZbQVAkJACLQTgV122SWMQ0TnIAyTmM52oq26m0UgdximZhsqqvyzzz4bvOqZ+Mk9f8wxxzSsmsmfbBAzzzxzYAg222yz4DDS8EYV6FoEJphggpDd4/7773cXX3xx6Cfqd6hTDGisgg8NR/+OO+64ECPXPOSJPyoSAkJACHQSgW233TYsuknaccEFFwSTIMIiioRANyDQUwwoubY33njjoGpFrYATyoknnuiY7OvRnnvu6U455RSHQfY999wTpGR4K3/++ef1btO1HkAA1dK9994bempB6NOyINmjFC0BNRX84MGDKzzzLR2nMaDKhmRvQFshIAQ6hcDvfvc7d9VVV7k//vGP7pe//GVYFK+//vru+OOPD6m0iVcsEgJ9hUBPqeBPPvnkENrm0ksvdQTCX2CBBYLTyZlnnun222+/oGpIAvnRRx+5iy66yP3pT39yrAYhVKU4qtx0001u6623Duf0r7cQuOOOO8JiApXSBx98EDqPBBTJaD2DehhQcxBq9YljL3hU7nGs26222iqk4EQFD4kBbRVt3S8EhEBeBEi3yd+uu+7qXnzxRYfmyAQ3yy67rFtppZXcfPPNV2XDnrc93ScEsiCQmwG98847naUizNKQ5ejOUrZWmaFDh7o11lgjMJ9WZr311nNHHHFECPod2wPa9euuuy6o3Y355DyxSd98800rom0PIjB8+PDg/Y4EFOciCAaUDEh2nPZYRUpAUaubBBT7UyQMRuuuu27Yfe6558JW6TgNGW2FgBDoFAIwmmlE9kJCxT399NPBQen22293aHFwUBIJgU4hkJsBJQwOAWw7STCNeBvHNM0004TDsWPHxqfL+zAl/NBee+01d8IJJzgYAlZ6qCDS0jXCKKfVRcBeUfcgwHvC1pP860a863rqd8rBgBJ0uVWnICSafBPmhPTGG28E6av1xbaSgBoS2goBIdBpBI4++ujMTTImioRAJxHIzYBiW/Lhhx823delllqq6XvsBib9ySef3A7D1iRQqNrTCPUsDAdhJ+aYYw5HIHxsYrAb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/O1Jvfnaq0fvRUAERKC3EJAC2ltmSv1sOoE///wzzJs3L7z11luB8+HjedtFDdtpSu5DiS/lr7/+GtZff/2w8847hy222MKzU5cFqvZ4r1jk8sJxlviX7r333sFOWfHzpzlfHYskx7ZyxOKuu+4aNtxww3zRqs/t9cmCyPv4lixZEvr16+dnuFMZ/onxTPF3333X46MefPDBqc+rBev3ZXr6bCfvuC8jS/h2GlLal59//jk8//zzYaeddgp//PGHjx2fR46aXXXVVdN8RTd2OljgvHOWoYcNGxaGDx9e4S/5xhtv+Dv8VNdYY42KKiLnIUOGBPx033zzTXeXGDVqlB8Ryhnezz33XNhhhx18PPSRWJq0YQdDVIwhVswYn3nmmWCnOnkSc5ofLy+IAdnenP3yyy9h7ty5/vdEH/jbKmL933//VeSLfeHaHh/yxHFyrOygQYPCK6+8EjjXnPs999wz/bskr0QEREAESkHA/olKRKDPEzBFMtl8882ToUOHJltvvXViSlliylRy/PHHe1r21Co7U96PVSXvpptummywwQaex6xYyU033ZSytA9+PzLRlJA0Ld4cddRRycYbb5yYsunHKZ544olehylgCUcsUrcptcmdd94Zi9S81tMnU6q8XurO/nA8afaZ+0WLFnl7nLZz2GGH+XvGakql35vinJhCmvbpo48+8vSrr746seXmtD5TttI8RTeXXXZZwphp0zZD+RWOpJubgBeZNWuWp991111tqrCz6P3dHXfc4e843Yq67MAHf6aPPF9wwQWJKYDJJptskuy1116eRj+/+OKLijrnz5+f7L777v6evIyZ8qTZl4M0L0dg1jNnHE1KeXN38LLVWOfzxYbq4UPeOM5rrrkm2WeffbzN9dZbz6/8Ld97772xSl1FQAREoBQEdBRnKaZBnehJArZhJUGhQrkyC6h3xXYlJxMmTPAPcBSIqICatdOVGPKahcmP8kSJRLlDYTTLaRIVTtvg4+U5uzsr3377radPnDjRk+fMmePPnPVNXxCzerlCZhbQxKxbnlbtVyN9oo4jjjjClb5sfVGRy/bVrHLJIYcckqAQPvzwwwnPiFnXnJVZHBM7ncfTogKKsmObthKzNCa2IcjfVfv1wAMP+LjHjh2b/PDDD57txx9/TE466SRPj+UZPxzMqtmmqhNOOCFB0aIcUk0BZQ5teT7tL3PHFw2+JMAPMcutP5v1OXn88ceTf//918f89NNP+5yjwMa89c5ZkWJZxLooX7186HtUQBnnGWeckZgfNL1sAAAI8klEQVQl2xV4vpjwd2lWXB8feSUiIAIiUAYC2oRUCju0OtGTBNgUYha/cPbZZ/uyLH3BN/Laa6/15fFs3z7//HNfZmYH+bbbbhuWX355X2Jmydosa+Gvv/4KLHUjRx99tB+7+uijj2arCPH52GOP9fSvvvrKryNGjAirr76635v1Ldxwww3BzgD3Ze+KCnIPjfQpV7TmIzviP/74Y19GN4utL9tTgHGakuhL2Q8++GBFHSz5srMetwNThCreZR/sn1+4/PLLQ//+/X33PeUQjqi9+eabfen4uuuu8+V8lt0POuggd09g+TzK0qVL3Q0CV4n2jrbFzcGsg2loJuZu0qRJAfZx579ZCf3ZrJTh8MMP97nDVeHQQw8N5557bqA9s7R6852dsziGatdG+GTrMAU0TJs2LbAUv8IKKzg32OEKkGWXLaN7ERABEegJAlJAe4K62iwVAXwxET6os7LSSiu1iY/JBzshdczy5lnZTY7y+sQTTwRb9vU0/BKRwYMHu48nfolRKSXdrImpryPPtrzLJZxyyim+Mx2fRfwozSob2CgUlTPPVPCrkT4VFK+ahD8qQv9glP1BQUZQULOCvyTc2hPCWpk10RXV/Lnm+Iyi0MMAtshxxx3n18cee8yv/DIrZcB3Mr5LXxTcmCXXfUKzr2Ls0wULFnhy/DswC3E2m98feeSRfjVLr187O2dtGsglNMonFjf3jVTJjmlscEKINSoRAREQgbIQ0CakssyE+tFjBBYuXOhtozDmBYtSXrAk3Xbbbb7hxXwkgy3VunUwWi+xXkVBOWKjCooTljVicFIe6xvWNYTNM1OmTHGLIFY4fgiizuaRc845xzfQxPqqXRvpU7U68unRYoalspow/qywiageYfMWUsSX9Kg0UT9KFSzYaATHyZMnkyXYUrYr5+bz6M+1fsX6snnifNvytydHq+baa6+dzeb3a621liuwcbxdMWdtGskkNMonFi36shK/EKCsS0RABESgLASkgJZlJtSPHiMwYMAAbxuLW/ywjp3Jf2hjkWN5FmsSig9L0+z23m677QJLxvfcc08s6leWh1lmjgooShNyzDHH+DX+wqKK5Y3TiV5++WVXWgkQz+5wLK7s2K4mjfapWj359MiCJfUixYb8UemOZes9fSjujI/W4lg+XqO1LvZhueWWc2YsL3Pa0corr+wWWZb5WWpuT7BU5yW2wfI8Enf140aRjyPKznjSY3/I35k5o3wtaZRPrAtOEhEQARHoDQTa/8/dG0ahPopAJwjYZhQPu4PViTBCWYlWwJg2c+ZM96fDPzOvREYLWlZpRWEZM2ZMsJ3c7l/47LPPegggQh9FoQ3K4jdJuB9+ENtRH6666ipf3q+lgDbap9hue9cYAoojSLH4ZQWfQpbfo/KWfVfPvUUO8Gz4rxaJ7U735KzlEp9ZFFDCW0UFsZ7ldyqKc5NtKy7vM/8IfSIMF33CrSErMW/sT2fnLFt30X1H+BTVozQREAERKCsBfV0u68yoX91GgJiQCJtfskLAdpSdrCxevNgf80vN+BGyvI7krW1RSWITDBtZ8orrFVdc4Zt6iFGZlagYRctc9l32viN9ypbnPip0WIGjRB9JlD7cDLJyySWXuAUwjjn7rp57LKrExSReZfSrjOVYEid2JoxjXFXe2W5uV95tZ7fPC1bn6Isay1a7Mo8xAH/MgxsFQrxVBL9TZPr06R7j0x/+7xdWYARfUqQzc1bE2ivN/OoIn0xx3YqACIhA6QnIAlr6KVIHm01gl112CZygg5JhYXx8UwtB3a+//nrfCZ1tn80nLJFbfMYwfvx491UkuDhnkGPtZEmZoOBZQZG0GKOuNKFMjhw5Mvs6jBs3zhUui1Xpyin9QaHlHHqWtLGg1pKO9Clf38CBAz0JSy2KGhuisAJidbSQQ+5qQD9RnrDi4lKAewEB3zsqKHGjR48OFms1WEgqd2VA+Zw6dWpgY9KMGTNSP9nYBso8/rMI1uF6heVzXBzwH2XH/EMPPeSB+M8777zU2olLBUooCi6bv+gXS9rkJc3CRXlkA9rszJwVsS4aR0f4FNWjNBEQAREoJYEyxIJSH0SgpwnYsnliZ6F78HliKRIcnaDhZv3zmJS2Q9q7aKcCJeeff34aPJ28FtInue+++zwuKM+8z8vtt9/u9dimovwrf7Zd9Ikpnp6HOvgxhSgxC2Nh/mxio30qigNK0HdTqD0AP21baCpvgliYZhmuCC7Pe2J9mjU37UaMA2qKeZpWzw2B303pS8dNHFVTehNb3i8sTsxVs3p6XNCi+KjV4oASc5Xx2RK6twVrgrbnhQDzpBMLNM6DuT8kpuymcVBjmXrmrCi+ZxHrony0Uy+fGAfUwoPF7qVXxsNYLBpDmqYbERABEehpAv3oQCk1Y3VKBHqIAP5+7JDOb7DJdscCxgcLKB+wZsXd1Nn3+Xs7xcdjemJNrObPie8o1kcLqu7LzfheNiKN9qmobiy4HAXKru+8cFQm1l38VxvtW76u/DN9x5WAI0jr3ciUr6PomdBKuBJg0cSiSDvLli1r94hT/i1+88033peiXfGxrc7MWS3Wsf54bRafWL+uIiACItDdBKSAdjdxtdfnCHCWOkoQvqHsao/hl/ociB4YcF4B7YEuqEkREAEREIECAvIBLYCiJBHoCgLsqH7xxRfDO++84zur8W2U8tkVZFWHCIiACIhAbycgBbS3z6D6X1oCnPTDTmviVLJhiaM5Jd1LAIWfjVP1xArt3p6pNREQARHo2wS0BN+351+jbyIB/Aijn2gtf9ImdkFVi4AIiIAIiEApCUgBLeW0qFMiIAIiIAIiIAIi0LoEFIi+dedWIxMBERABERABERCBUhKQAlrKaVGnREAEREAEREAERKB1CUgBbd251chEQAREQAREQAREoJQEpICWclrUKREQAREQAREQARFoXQJSQFt3bjUyERABERABERABESglASmgpZwWdUoEREAEREAEREAEWpeAFNDWnVuNTAREQAREQAREQARKSUAKaCmnRZ0SAREQAREQAREQgdYl8D9CbgP5t3oLpwAAAABJRU5ErkJggg==" /></p>
 <pre class="r"><code>FigureSTai5&lt;-subset(dataA3,Gene==&quot;SDM.Tai5A&quot;|Gene==&quot;SDM.Tai5B&quot;)
 
-pFigSTai5&lt;-ggplot(FigureSTai5, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFigSTai5&lt;-ggplot(FigureSTai5, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
   geom_point(aes(linetype=Sex),size=2)+
   geom_line(aes(linetype=Sex),size=0.5)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = &quot;black&quot;))+

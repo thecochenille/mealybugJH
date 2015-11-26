@@ -71,15 +71,14 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
 
 #Loading datasets
 ```{r}
-setwd("/Users/ivea/Dropbox/_Github_reps/mealybugJH/")
 dataA<-read.csv(file="expressionprofile.csv",header =TRUE)
 dataB<-read.csv(file="Pyri5mM.csv",header = TRUE)
 
 #reshaping data
 dataA2<-gather(dataA,Gene,SDM,7:24)
 
-#summarizing by gene, day after hatching and sex
-dataA3<-ddply(dataA2,~Day.after.hatching +Sex+Gene,summarise,meanrp49=mean(SDM.rp49.2),meanSDM=mean(SDM))
+#summarizing by gene, day after oviposition and sex
+dataA3<-ddply(dataA2,~Day.after.oviposition +Sex+Gene,summarise,meanrp49=mean(SDM.rp49.2),meanSDM=mean(SDM))
 
 #normalize dataB with housekeeping gene
 dataB$gene.normal<-dataB$SDM.gene/dataB$rp49.2
@@ -95,7 +94,7 @@ dataBs<-summarySE(dataB, measurevar="gene.normal", groupvars=c("Treatment","Stag
 library(dplyr)
 Figure2<-subset(dataA3,Gene=="SDM.JHAMT"|Gene=="SDM.Met"|Gene=="SDM.Tai"|Gene=="SDM.Pkkr.h1_26")
 
-pFig1<-ggplot(Figure2, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFig1<-ggplot(Figure2, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
   geom_point(aes(linetype=Sex),size=2)+
   geom_line(aes(linetype=Sex),size=0.5)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
@@ -307,7 +306,7 @@ t.test(gene.normal~Treatment,data=pupatestPkkrh1B)
 ###Figure 5A: Expression profile of Pkbr1 and Pkbr2
 ```{r}
 Figure5<-subset(dataA3,Gene=="SDM.Pkbr1"|Gene=="SDM.Pkbr2"|Gene=="SDM.Pkbr3")
-pFig5<-ggplot(Figure5, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFig5<-ggplot(Figure5, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
    geom_point(aes(linetype=Sex))+
    geom_line(aes(linetype=Sex))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
@@ -322,7 +321,7 @@ pFig5+facet_grid(Gene~.,scale="free")
 ###Figure S7A: Expression profile of Pkbr1Z2, Z4, Pkbr2, Z2 and Z4 and Pkbr3Z2
 ```{r}
 FigureS7A<-subset(dataA3,Gene=="SDM.Pkbr1.Z2"|Gene=="SDM.Pkbr1.Z4"|Gene=="SDM.Pkbr2.Z2"|Gene=="SDM.Pkbr2.Z4"|Gene=="SDM.Pkbr3.Z2")
-pFigS7A<-ggplot(FigureS7A, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFigS7A<-ggplot(FigureS7A, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
    geom_point(aes(linetype=Sex))+
    geom_line(aes(linetype=Sex))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
@@ -559,7 +558,7 @@ t.test(gene.normal~Treatment,data=pupatestPkbr3z2)
 ```{r}
 FigureSTai<-subset(dataA3,Gene=="SDM.Tai.IN"|Gene=="SDM.Tai.DEL")
 
-pFigSTai<-ggplot(FigureSTai, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFigSTai<-ggplot(FigureSTai, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
   geom_point(aes(linetype=Sex),size=2)+
   geom_line(aes(linetype=Sex),size=0.5)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
@@ -571,7 +570,7 @@ pFigSTai+facet_grid(Gene~.,scales="free")
 
 FigureSTai5<-subset(dataA3,Gene=="SDM.Tai5A"|Gene=="SDM.Tai5B")
 
-pFigSTai5<-ggplot(FigureSTai5, aes(x=Day.after.hatching,y=meanSDM/meanrp49,group=Sex)) +
+pFigSTai5<-ggplot(FigureSTai5, aes(x=Day.after.oviposition,y=meanSDM/meanrp49,group=Sex)) +
   geom_point(aes(linetype=Sex),size=2)+
   geom_line(aes(linetype=Sex),size=0.5)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))+
