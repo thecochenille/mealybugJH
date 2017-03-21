@@ -1,12 +1,16 @@
-# R analyses for Vea et al. Differential juvenile hormone modulation establishes extreme sexual dimorphism, for submission to PloS ONE in scale insects
+# R analyses for Vea et al. 2016 Differential juvenile hormone variations in scale insect extreme sexual dimorphism
+DOI: http://dx.doi.org/10.1371/journal.pone.0149459
+
 Isabelle Vea  
 September 14, 2015  
 
 #Introduction
+
 This file details the analyses performed in R to obtain the figures presented in Vea et al. Differential juvenile hormone modulations establish extreme sexual dimorphism in scale insects.
 
 
 #Data
+
 This script uses 2 files obtained from qRT-PCR (see Materials and Methods of main text for equipment). All values are the SDM.
 - expressionprofile.csv: data for expression profiles
 - Pyri5mM.csv: data for effect of JHM treatments on male development
@@ -21,6 +25,7 @@ This script uses 2 files obtained from qRT-PCR (see Materials and Methods of mai
 ```
 
 #Loading datasets
+
 
 ```r
 dataA<-read.csv(file="expressionprofile.csv",header =TRUE)
@@ -41,6 +46,7 @@ dataBs<-summarySE(dataB, measurevar="gene.normal", groupvars=c("Treatment","Stag
 
 #Expression profiles
 ##Figure 2: Expression profiles of PkJHAMT, PkMet, PkTai, PkKr-h1-common
+
 
 ```r
 library(dplyr)
