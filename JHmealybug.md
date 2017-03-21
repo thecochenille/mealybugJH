@@ -4,12 +4,12 @@ DOI: http://dx.doi.org/10.1371/journal.pone.0149459
 Isabelle Vea  
 September 14, 2015  
 
-#Introduction
+# Introduction
 
 This file details the analyses performed in R to obtain the figures presented in Vea et al. Differential juvenile hormone modulations establish extreme sexual dimorphism in scale insects.
 
 
-#Data
+# Data
 
 This script uses 2 files obtained from qRT-PCR (see Materials and Methods of main text for equipment). All values are the SDM.
 - expressionprofile.csv: data for expression profiles
@@ -24,7 +24,7 @@ This script uses 2 files obtained from qRT-PCR (see Materials and Methods of mai
 ## Warning: package 'plyr' was built under R version 3.1.3
 ```
 
-#Loading datasets
+# Loading datasets
 
 
 ```r
@@ -44,8 +44,8 @@ dataB$gene.normal<-dataB$SDM.gene/dataB$rp49.2
 dataBs<-summarySE(dataB, measurevar="gene.normal", groupvars=c("Treatment","Stage.treated","Gene"))
 ```
 
-#Expression profiles
-##Figure 2: Expression profiles of PkJHAMT, PkMet, PkTai, PkKr-h1-common
+# Expression profiles
+## Figure 2: Expression profiles of PkJHAMT, PkMet, PkTai, PkKr-h1-common
 
 
 ```r
@@ -86,8 +86,8 @@ pFig1+facet_grid(Gene~.,scales="free")
 
 ![](JHmealybug_files/figure-html/unnamed-chunk-3-1.png) 
 
-##Figure 3: Effect on Met and Kr-h1
-###Figure 3C: PkMet
+## Figure 3: Effect on Met and Kr-h1
+### Figure 3C: PkMet
 
 ```r
 #boxplot
@@ -118,7 +118,7 @@ dev.off()
 ## quartz_off_screen 
 ##                 2
 ```
-###Statistical test Met
+### Statistical test Met
 
 ```r
 prepupatestMet<-subset(dataB,dataB$Stage.treated=="PreD1" & dataB$Gene=="B.Met")
@@ -158,7 +158,7 @@ t.test(gene.normal~Treatment,data=pupatestMet)
 ##                0.3916784                0.2822968
 ```
 
-##Figure 3-D to F: Tai core, Tai-IN and Tai-DEL
+## Figure 3-D to F: Tai core, Tai-IN and Tai-DEL
 
 ```r
 PkTaibox<-subset(dataB, Gene=="O.Tai")
@@ -364,7 +364,7 @@ dev.off()
 
 
 
-###Statistical tests
+### Statistical tests
 
 
 ```r
@@ -482,7 +482,7 @@ t.test(gene.normal~Treatment,data=pupatestPkTai)
 ```
 
 
-##Figure 3G to I: PkKr-h1 core, PkKr-h1 A and PkKr-h1 B
+## Figure 3G to I: PkKr-h1 core, PkKr-h1 A and PkKr-h1 B
 
 ```r
 PkKrh1<-subset(dataBs,dataBs$Gene=="D.kr-h1")
@@ -716,7 +716,7 @@ dev.off()
 ##                 2
 ```
 
-###Statistical tests
+### Statistical tests
 
 ```r
 #subsetting original data for statistical tests prepupae
@@ -834,8 +834,8 @@ t.test(gene.normal~Treatment,data=pupatestPkkrh1B)
 ##             0.0004568503             0.0001826705
 ```
 
-##Figure 5: Broad
-###Figure 5A: Expression profile of Pkbr1 and Pkbr2
+## Figure 5: Broad
+### Figure 5A: Expression profile of Pkbr1 and Pkbr2
 
 ```r
 Figure5<-subset(dataA3,Gene=="SDM.Pkbr1"|Gene=="SDM.Pkbr2"|Gene=="SDM.Pkbr3")
@@ -852,7 +852,7 @@ pFig5+facet_grid(Gene~.,scale="free")
 
 ![](JHmealybug_files/figure-html/unnamed-chunk-14-1.png) 
 
-###Figure S7A: Expression profile of Pkbr1Z2, Z4, Pkbr2, Z2 and Z4 and Pkbr3Z2
+### Figure S7A: Expression profile of Pkbr1Z2, Z4, Pkbr2, Z2 and Z4 and Pkbr3Z2
 
 ```r
 FigureS7A<-subset(dataA3,Gene=="SDM.Pkbr1.Z2"|Gene=="SDM.Pkbr1.Z4"|Gene=="SDM.Pkbr2.Z2"|Gene=="SDM.Pkbr2.Z4"|Gene=="SDM.Pkbr3.Z2")
@@ -869,7 +869,7 @@ pFigS7A+facet_grid(Gene~.,scale="free")
 
 ![](JHmealybug_files/figure-html/unnamed-chunk-15-1.png) 
 
-###Figure5B
+### Figure5B
 
 ```r
 #boxplot
@@ -931,7 +931,7 @@ dev.off()
 ##                 2
 ```
 
-###Figure5C
+### Figure5C
 
 ```r
 #boxplot
@@ -1017,7 +1017,7 @@ dev.off()
 ##                 2
 ```
 
-###Figure5D
+### Figure5D
 
 ```r
 #boxplot
@@ -1103,7 +1103,7 @@ dev.off()
 ```
 
 
-###Figure5E
+### Figure5E
 
 ```r
 #boxplot
@@ -1164,7 +1164,7 @@ dev.off()
 ##                 2
 ```
 
-##Figure5F
+## Figure5F
 
 ```r
 #boxplot
@@ -1249,7 +1249,7 @@ dev.off()
 ##                 2
 ```
 
-###Figure  Pkbr2 and Pkbr2 Z2, Z4
+### Figure  Pkbr2 and Pkbr2 Z2, Z4
 
 ```r
 #boxplot
@@ -1482,7 +1482,7 @@ dev.off()
 
 
 
-###Statistical tests
+### Statistical tests
 
 ```r
 #subsetting original data for statistical tests prepupae
@@ -1791,9 +1791,9 @@ t.test(gene.normal~Treatment,data=pupatestPkbr3z2)
 ##               0.08028463               0.09020067
 ```
 
-#Supplementary material
+# Supplementary material
 
-##Figure Taiman 5A and B and INDEL
+## Figure Taiman 5A and B and INDEL
 
 ```r
 FigureSTai<-subset(dataA3,Gene=="SDM.Tai.IN"|Gene=="SDM.Tai.DEL")
