@@ -1,8 +1,8 @@
-# R analyses for Vea et al.  (submitted PloS ONE)
-
+# R analyses for Vea et al. 2016 Differential juvenile hormone variations in scale insect extreme sexual dimorphism
+DOI:http://dx.doi.org/10.1371/journal.pone.0149459
 
 ##Summary
-This folder includes all files for the R analyses performed in the manuscript: Vea et la. Differential juvenile hormone modulation establishes extreme sexual dimorphism in scale insects (for submission in PloS ONE)
+This folder includes all the files for the R analyses performed in the manuscript: Vea et at. 2016 (http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0149459)
 
 ## List of files
 
@@ -12,7 +12,7 @@ This folder includes all files for the R analyses performed in the manuscript: V
 - [Pyri5mM.csv](https://github.com/zourloubidou/mealybugJH/blob/master/Pyri5mM.csv): data file including SDM quantity of each studied gene for prepupae and pupae treated with 5mM pyriproxyfen
 
 ## List of variables for each file
-###expressionprofile.csv:
+### expressionprofile.csv:
 - cDNA ID: unique number for cDNA
 - Sample.ID: sample ID used for sample collecting
 - Day.after.oviposition: number indicating the day the samples were collected for RNA extraction after they were laid.
@@ -38,7 +38,7 @@ Below are the SDM values obtained from qRT-PCR
 - SDM.Pkbr3.Z2: Pkbr3 Z2
 
 
-###Pyri5mM.csv
+### Pyri5mM.csv
 - Sample: Sample ID
 - Treatment: pyriproxyfen (5mM) or methanol	
 - Stage.treated: PreD1 = prepupa (24-48 hours after molt), PuD0= pupa (0-24 hours after molt)	
@@ -46,7 +46,7 @@ Below are the SDM values obtained from qRT-PCR
 - SDM.gene: gene SDM value from qRT-PCR	
 - rp49.2: SDM rpL32 (reference gene)	
 
-###sexratio.csv
+### sexratio.csv
 - Mother: letter assigned to each mother
 - Oviposition: day of oviposition after first oviposition (day 1)
 - NumberEggs: number of eggs oviposited
@@ -54,10 +54,10 @@ Below are the SDM values obtained from qRT-PCR
 - NumberFemale: number of female embryos
 - NumberUnknown: number of embryos that could not be sexed
 
-##Scripts
-To access sex ratio analysis click [here](https://github.com/zourloubidou/mealybugJH/blob/master/JHmealybug.md)
+## Scripts
+To access sex ratio analysis click [here](https://github.com/zourloubidou/mealybugJH/blob/master/sexratio.md)
 
-To access expression profiles and effect of JHM treatment click [here](https://github.com/zourloubidou/mealybugJH/blob/master/sexratio.md)
+To access expression profiles and effect of JHM treatment click [here](https://github.com/zourloubidou/mealybugJH/blob/master/JHmealybug.md)
 
 
 
