@@ -2,7 +2,7 @@
 Isabelle Vea  
 September 14, 2015  
 
-#Functions
+# Functions
 
 ```r
 ##script source for summarizeSE: http://www.cookbook-r.com/Graphs/Plotting_means_and_error_bars_(ggplot2)/#Helper functions
@@ -49,7 +49,7 @@ summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
 }
 ```
 ```
-#Data
+# Data
 
 The dataset was obtained from embryo counts. Describe protocol
 Variables in this dataset:
@@ -90,10 +90,10 @@ names(data)
 - NumberFemale
 - NumberUnknown
 
-#Percentage of males
+# Percentage of males
 
 ```r
-#generatin percentage of males
+#generating percentage of males
 
 data$PercentMale<-data$NumberMale*100/data$NumberEggs
 
